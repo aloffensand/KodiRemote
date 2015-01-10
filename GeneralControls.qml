@@ -21,11 +21,8 @@ Rectangle {
             backAction.onTriggered()
             event.accepted = true
         } else if (event.key == Qt.Key_T) {
-            //textBox.focus = true
             textBox.forceActiveFocus()
-            event.accepted = true       //} else {
-            //console.log('netri')
-            //event.accepted = true
+            event.accepted = true
         }
     }
 
@@ -157,9 +154,6 @@ Rectangle {
     Row {
         anchors.left: controlGrid.right
         anchors.leftMargin: 5
-        //Text {
-            //text: 'Send text: '
-        //}
         TextField {
             id: textBox
             placeholderText: 'Send text (t)'

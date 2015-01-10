@@ -1,69 +1,119 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.1
+import QtQuick.Layouts 1.1
 
 Rectangle {
     id: playerControls
     color: 'transparent'
     property int playerid: parent.playerid
-    property bool disabled: playerid < 0 ? true : false
+    property string playertype: parent.playertype
 
-    onDisabledChanged: {
+    onPlayertypeChanged: {
+        var enabled = (playertype != 'none')
         for( var i=0; i < children.length; i++) {
-            children[i].enabled = ! disabled
+            children[i].enabled = enabled
         }
-        //children.forEach(function(child) {
-            //child.enabled = ! disabled
-        //})
+        updateTimer.running = enabled
+
+        if (enabled && playertype != 'video') {
+            console.log(playertype)
+            audioStreamBox.enabled = false
+            subtitleBox.enabled = false
+        }
+    }
+
+    function requestPlayerProperties(properties, setterMethod) {
+        var args0 = '{"playerid": ' + playerid +
+                    ', "properties": ["audiostreams"]}'
+        requestData('"Player.GetProperties"', args0, setAudioStreamList)
+
+
+    function arrays_equal(arr0, arr1) {
+        if (arr0 == arr1) return true;
+        if (arr0 == null || arr1 == null) return false;
+        if (arr0.length != arr1.length) return false;
+        for (var i = 0; i < arr0.length; i++) {
+            if (arr0[i] !== arr1[i]) return false;
+        }
+        return true;
     }
 
     function setAudioStreamList(jsonObj) {
         var newList = []
-        jsonObj.result.audiostreams.forEach(function(audio) {
-            if(audio.language == "") {
-                newList.push("Unknown")
+        var streams = jsonObj.result.audiostreams
+        var equal = (streams.length == audioStreamBox.model.length)
+        for (var i = 0; i < streams.length; i++) {
+            var streamString = streams[i].index + ': '
+            if (streams[i].language == '') {
+                streamString += 'Unknown'
             } else {
-                newList.push(audio.language)
+                streamString += streams[i].language
             }
-        })
-        if(audioStreamBox.model != newList) {
+            if (streams[i].name != '') {
+                streamString += ' (' + streams[i].name + ')'
+            }
+            if (streamString != audioStreamBox.model[i]) {
+                equal = false
+            }
+            newList.push(streamString)
+        }
+        if ( ! equal) {
             audioStreamBox.model = newList
         }
     }
 
     function setCurrentAudioStream(jsonObj) {
-        var lang = jsonObj.result.currentaudiostream.language
-        if(lang == "")
-            lang = "Unknown"
-        audioStreamBox.currentIndex = audioStreamBox.find(lang)
+        var index = jsonObj.result.currentaudiostream.index
+        audioStreamBox.currentIndex = index
+    }
+
+    function updateAudioStreamBox() {
+        var args0 = '{"playerid": ' + playerid +
+                    ', "properties": ["audiostreams"]}'
+        var args1 = '{"playerid": ' + playerid +
+                    ', "properties": ["currentaudiostream"]}'
+        requestData('"Player.GetProperties"', args0, setAudioStreamList)
+        requestData('"Player.GetProperties"', args1, setCurrentAudioStream)
     }
 
     function setSubtitleList(jsonObj) {
         var newList = ['-1: None']
-        jsonObj.result.subtitles.forEach(function(sub) {
-            var subStr = sub.index + ': '
-            if(sub.language == '') {
+        var subs = jsonObj.result.subtitles
+        var equal = (subs.length == (subtitleBox.model.length - 1))
+        for (var i=0; i < subs.length; i++) {
+            var subStr = subs[i].index + ': '
+            if (subs[i].language == '') {
                 subStr += 'Unknown'
             } else {
-                subStr += sub.language
+                subStr += subs[i].language
+            }
+            if (subStr != subtitleBox.model[i + 1]) {
+                equal = false
             }
             newList.push(subStr)
-        })
-        if(subtitleBox.model != newList) {
+        }
+        if ( ! equal) {
             subtitleBox.model = newList
         }
     }
 
     function setCurrentSubtitle(jsonObj) {
-        //var lang = jsonObj.result.currentsubtitle.language
-        //if(lang == "")
-            //lang = "Unknown"
-            //subtitleBox.currentIndex = subtitleBox.find(lang)
+        var newIndex = subtitleBox.currentIndex
         if (jsonObj.result.subtitleenabled) {
             var newIndex = jsonObj.result.currentsubtitle.index + 1
         } else {
             newIndex = 0
         }
         subtitleBox.currentIndex = newIndex
+    }
+
+    function updateSubtitleBox() {
+        var args0 = '{"playerid": ' + playerid +
+                    ', "properties": ["subtitles"]}'
+        var args1 = '{"playerid": ' + playerid +
+                    ', "properties": ["currentsubtitle", "subtitleenabled"]}'
+        requestData('"Player.GetProperties"', args0, setSubtitleList)
+        requestData('"Player.GetProperties"', args1, setCurrentSubtitle)
     }
 
     function setVideoLength(jsonObj) {
@@ -74,9 +124,6 @@ Rectangle {
         progressText.curLength = jsonObj.result.totaltime.hours
         progressText.curLength += ":" + jsonObj.result.totaltime.minutes + ":"
         progressText.curLength += jsonObj.result.totaltime.seconds
-        hourBox.maximumValue = jsonObj.result.totaltime.hours
-        minuteBox.alternateMax = jsonObj.result.totaltime.minutes
-        secondBox.alternateMax = jsonObj.result.totaltime.seconds
     }
 
     function setVideoProgress(jsonObj) {
@@ -89,8 +136,35 @@ Rectangle {
         progressText.curTime += jsonObj.result.time.seconds
     }
 
+    function updateVideoTimes() {
+        var args0 = '{"playerid": ' + playerid +
+                    ', "properties": ["totaltime"]}'
+        var args1 = '{"playerid": ' + playerid +
+                    ', "properties": ["percentage"]}'
+        var args2 = '{"playerid": ' + playerid +
+                    ', "properties": ["time"]}'
+        requestData('"Player.GetProperties"', args0, setVideoLength)
+        requestData('"Player.GetProperties"', args1, setVideoProgress)
+        requestData('"Player.GetProperties"', args2, setVideoTime)
+    }
+
     Keys.onSpacePressed: playPauseAction.onTriggered()
     Keys.onEscapePressed: stopAction.onTriggered()
+
+    Timer {
+        id: updateTimer
+        interval: 2000
+        repeat: true
+        running: ! parent.disabled
+        triggeredOnStart: true
+        onTriggered: {
+            updateVideoTimes()
+            if (playertype == 'video') {
+                updateAudioStreamBox()
+                updateSubtitleBox()
+            }
+        }
+    }
 
     Action {
         id: playPauseAction
@@ -115,22 +189,18 @@ Rectangle {
     Column {
         anchors.fill: parent
         spacing: 7
+
         Row {
             Button {
                 id: playPauseButton
-                text: 'Play/Pause'
-                onClicked: {
-                    sendCommand('"Player.PlayPause"', '{"playerid": ' + playerid + '}')
-                }
+                action: playPauseAction
             }
             Button {
                 id: stopButton
-                text: 'Stop'
-                onClicked: {
-                    sendCommand('"Player.Stop"', '{"playerid": ' + playerid + '}')
-                }
+                action: stopAction
             }
         }
+
         Grid {
             columns: 2
             verticalItemAlignment: Grid.AlignVCenter
@@ -139,45 +209,110 @@ Rectangle {
             }
             ComboBox {
                 id: audioStreamBox
+                width: 200
                 model: []
                 onHoveredChanged: {
                     if (hovered) {
-                        requestData('"Player.GetProperties"', '{"playerid": ' + playerid + ', "properties": ["audiostreams"]}', setAudioStreamList)
-                        requestData('"Player.GetProperties"', '{"playerid": ' + playerid + ', "properties": ["currentaudiostream"]}', setCurrentAudioStream)
+                        updateAudioStreamBox()
                     }
                 }
                 onActivated: {
-                    sendCommand('"Player.SetAudioStream"', '{"playerid": ' + playerid + ', "stream": ' + index + '}')
+                    var streamIndex = model[index].split(':')[0]
+                    var args = '{"playerid": ' + playerid +
+                               ', "stream": ' + streamIndex + '}'
+                    sendCommand('"Player.SetAudioStream"', args)
                 }
             }
             Text {
-                text: 'Subtitles: '
+                text: 'Subtitles:   '
             }
             ComboBox {
                 id: subtitleBox
+                width: 200
                 model: []
                 onHoveredChanged: {
                     if (hovered) {
-                        requestData('"Player.GetProperties"', '{"playerid": ' + playerid + ', "properties": ["subtitles"]}', setSubtitleList)
-                        requestData('"Player.GetProperties"', '{"playerid": ' + playerid + ', "properties": ["currentsubtitle", "subtitleenabled"]}', setCurrentSubtitle)
+                        updateSubtitleBox()
                     }
                 }
                 onActivated: {
                     var subIndex = model[index].split(':')[0]
                     if (subIndex != -1) {
-                        console.log(subIndex + "ui")
-                        sendCommand('"Player.SetSubtitle"', '{"playerid": ' + playerid + ', "subtitle": ' + subIndex + ', "enable": true}')
+                        var args = '{"playerid": ' + playerid +
+                                   ', "subtitle": ' + subIndex +
+                                   ', "enable": true}'
                     } else {
-                        console.log(subIndex + "nri")
-                        sendCommand('"Player.SetSubtitle"', '{"playerid": ' + playerid + ', "subtitle": "off"}')
+                        args = '{"playerid": ' + playerid +
+                               ', "subtitle": "off"}'
                     }
+                    sendCommand('"Player.SetSubtitle"', args)
                 }
             }
         }
 
-        Row {
+        RowLayout {
+            width: parent.width
+            spacing: 7
+
+            OtherSlider {
+                id: progressSlider
+                Layout.fillWidth: true
+                minimumValue: 0
+                maximumValue: 100
+                style: OtherSliderStyle {}
+                property int currentVideoTime: 0
+                property int videoLength: 45*60  // in seconds
+
+                function getTime (percentage) {
+                    var total = percentage * videoLength / 100
+                    var hours = Math.floor(total / 3600)
+                    var minutes = Math.floor( (total / 60) % 60)
+                    var seconds = Math.floor(total % 60)
+                    return [hours, minutes, seconds]
+                }
+
+                onPressedChanged: {
+                    if ( ! pressed) {
+                        var newTime = getTime(value)
+                        var args = '{"playerid": ' + playerid +
+                                   ', "value": ' + 
+                                   '{ "hours": ' + newTime[0] +
+                                   ', "minutes": ' + newTime[1] +
+                                   ', "seconds": ' + newTime[2] + '}}'
+                        sendCommand('"Player.Seek"', args)
+                    }
+                }
+
+                Rectangle {
+                    id: hoverRect
+                    height: hoverText.implicitHeight
+                    width: Math.max(50, hoverText.implicitWidth)
+                    visible: progressSlider.hovered
+                    x: progressSlider.hoveredPosition
+                    y: -10
+                    color: "red"
+                    Text { id: hoverText; text: "text" }
+                }
+
+                onHoveredChanged: {
+                    if(hovered) {
+                        updateVideoTimes()
+                    }
+                }
+
+                onHoveredValueChanged: {
+                    var newTime = progressSlider.getTime(hoveredValue)
+                    hoverText.text = newTime[0] + ":" +
+                                     newTime[1] + ":" +
+                                     newTime[2]
+                }
+            }
+
             Text {
-                text: 'time'
+                id: progressText
+                property string curTime: '0:00:00'
+                property string curLength: '0:00:00'
+                text: curTime + ' / ' + curLength
             }
         }
     }

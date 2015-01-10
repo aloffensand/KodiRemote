@@ -19,6 +19,7 @@ Tab {
         property int marginVal: height / 20
         property int rowHeight: 20
         property int playerid: -1
+        property string playertype: 'none'
 
         focus: true
         //Component.onCompleted: mainRec.forceActiveFocus()

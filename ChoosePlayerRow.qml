@@ -2,13 +2,38 @@ import QtQuick 2.1
 import QtQuick.Controls 1.1
 
 Row {
+    property bool connected: true
+
     function setActivePlayerList(jsonObj) {
         var newList = [ '-1: none' ]
-        jsonObj.result.forEach(function(player) {
-            newList.push('' + player.playerid + ': ' + player.type)
-        })
-        if (playeridBox.model != newList) {
+        var players = jsonObj.result
+        var equal = (players.length == playeridBox.model.length - 1)
+        for (var i = 0; i < players.length; i++) {
+            var playerStr = players[i].playerid + ': ' + players[i].type
+            newList.push(playerStr)
+            if (playerStr != playeridBox.model[i + 1]) {
+                equal = false
+            }
+        }
+        if (! equal) {
             playeridBox.model = newList
+            if (playerid == -1 && newList.length > 1) {
+                playeridBox.currentIndex = 1
+            }
+        }
+    }
+
+    function updatePlayeridBox() {
+        requestData('"Player.GetActivePlayers"', '{}', setActivePlayerList)
+    }
+
+    Timer {
+        interval: 500
+        repeat: true
+        running: true
+        triggeredOnStart: true
+        onTriggered: {
+            updatePlayeridBox()
         }
     }
 
@@ -26,13 +51,18 @@ Row {
         id: playeridBox
         anchors.verticalCenter: parent.verticalCenter
         onHoveredChanged: {
-            requestData('"Player.GetActivePlayers"', '{}', setActivePlayerList)
+            updatePlayeridBox()
         }
-        onActivated: {
-            var temp = model[index]
-            playerid = temp.split(":")[0]
-            console.log(playerid)
-            //playerid = index - 1
+        onCurrentIndexChanged: {
+            var temp = model[currentIndex]
+            var tempid = temp.split(':')[0]
+            var temptype = temp.split(':')[1]
+            if (playerid != tempid) {
+                playerid = tempid
+            }
+            if (playertype != temptype) {
+                playertype = temp.split(": ")[1]
+            }
         }
     }
     Text {
@@ -45,33 +75,3 @@ Row {
         color: 'black'
     }
 }
-
-//Rectangle {
-    //Rectangle {
-        //height: 1
-        //width: parent.width
-        //y: parent.height / 2
-        //color: 'black'
-    //}
-    //Rectangle {
-        //id: txtRec
-        //width: txt.width
-        //height: txt.height
-        //anchors.verticalCenter: parent.verticalCenter
-        //x: 20
-        //Text {
-            //id: txt
-            ////anchors {
-                ////verticalCenter: parent.verticalCenter
-            ////}
-            ////x: 20
-            //text: 'Active Player: '
-        //}
-    //}
-    //ComboBox {
-        //anchors {
-            //left: txtRec.right
-            //verticalCenter: parent.verticalCenter
-        //}
-    //}
-//}

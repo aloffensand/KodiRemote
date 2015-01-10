@@ -73,6 +73,9 @@ Rectangle {
             id: mainTab
             Component.onCompleted: forceActiveFocus()
         }
+        VideoTab {
+            id: videoTab
+        }
         Tab {
             title: 'red'
             Rectangle {
