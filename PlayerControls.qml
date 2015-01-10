@@ -23,9 +23,10 @@ Rectangle {
     }
 
     function requestPlayerProperties(properties, setterMethod) {
-        var args0 = '{"playerid": ' + playerid +
-                    ', "properties": ["audiostreams"]}'
-        requestData('"Player.GetProperties"', args0, setAudioStreamList)
+        var args = '{"playerid": ' + playerid +
+                   ', "properties": [' + properties + ']}'
+        requestData('"Player.GetProperties"', args, setterMethod)
+    }
 
 
     function arrays_equal(arr0, arr1) {
@@ -68,12 +69,8 @@ Rectangle {
     }
 
     function updateAudioStreamBox() {
-        var args0 = '{"playerid": ' + playerid +
-                    ', "properties": ["audiostreams"]}'
-        var args1 = '{"playerid": ' + playerid +
-                    ', "properties": ["currentaudiostream"]}'
-        requestData('"Player.GetProperties"', args0, setAudioStreamList)
-        requestData('"Player.GetProperties"', args1, setCurrentAudioStream)
+        requestPlayerProperties('"audiostreams"', setAudioStreamList)
+        requestPlayerProperties('"currentaudiostream"', setCurrentAudioStream)
     }
 
     function setSubtitleList(jsonObj) {
@@ -108,12 +105,9 @@ Rectangle {
     }
 
     function updateSubtitleBox() {
-        var args0 = '{"playerid": ' + playerid +
-                    ', "properties": ["subtitles"]}'
-        var args1 = '{"playerid": ' + playerid +
-                    ', "properties": ["currentsubtitle", "subtitleenabled"]}'
-        requestData('"Player.GetProperties"', args0, setSubtitleList)
-        requestData('"Player.GetProperties"', args1, setCurrentSubtitle)
+        requestPlayerProperties('"subtitles"', setSubtitleList)
+        var properties = '"currentsubtitle", "subtitleenabled"'
+        requestPlayerProperties(properties, setCurrentSubtitle)
     }
 
     function setVideoLength(jsonObj) {
@@ -137,15 +131,9 @@ Rectangle {
     }
 
     function updateVideoTimes() {
-        var args0 = '{"playerid": ' + playerid +
-                    ', "properties": ["totaltime"]}'
-        var args1 = '{"playerid": ' + playerid +
-                    ', "properties": ["percentage"]}'
-        var args2 = '{"playerid": ' + playerid +
-                    ', "properties": ["time"]}'
-        requestData('"Player.GetProperties"', args0, setVideoLength)
-        requestData('"Player.GetProperties"', args1, setVideoProgress)
-        requestData('"Player.GetProperties"', args2, setVideoTime)
+        requestPlayerProperties('"totaltime"', setVideoLength)
+        requestPlayerProperties('"percentage"', setVideoProgress)
+        requestPlayerProperties('"time"', setVideoTime)
     }
 
     Keys.onSpacePressed: playPauseAction.onTriggered()
