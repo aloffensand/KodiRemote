@@ -53,6 +53,7 @@ Tab {
                 sendCommand('"VideoLibrary.Scan"', '{}')
             }
         }
+
         Button {
             id: scanButton
             text: "Scan library"
@@ -72,6 +73,7 @@ Tab {
         Button {
             id: update
             anchors { left: cleanButton.right }
+            text: 'Update local library'
             onClicked: {
                 requestData('"VideoLibrary.GetTVShows"',
                     '{"properties": ["title", "art", "thumbnail", "fanart"]}',
@@ -111,7 +113,9 @@ Tab {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    seriesTable.currentIndex = seriesTable.indexAt(mouse.x, mouse.y)
+                    var xval = parent.contentX + mouse.x
+                    var yval = parent.contentY + mouse.y
+                    seriesTable.currentIndex = seriesTable.indexAt(xval, yval)
                 }
             }
         }

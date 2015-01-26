@@ -21,7 +21,10 @@ Rectangle {
             backAction.onTriggered()
             event.accepted = true
         } else if (event.key == Qt.Key_T) {
-            textBox.forceActiveFocus()
+            textBox.focus = true
+            event.accepted = true
+        } else if (event.key == Qt.Key_I) {
+            infoAction.onTriggered()
             event.accepted = true
         }
     }
@@ -102,7 +105,7 @@ Rectangle {
     Action {
         id: infoAction
         text: 'Info'
-        tooltip: 'Information ()'
+        tooltip: 'Information (i)'
         onTriggered: {
             console.log('Showing informations')
             sendCommand('"Input.Info"', '{}')
@@ -157,8 +160,16 @@ Rectangle {
         TextField {
             id: textBox
             placeholderText: 'Send text (t)'
-            Keys.priority: Keys.AfterItem
             onAccepted: sendTextAction()
+            Keys.onPressed: {
+                if (event.key == Qt.Key_Enter || event.key == Qt.Key_Return) {
+                    sendTextAction.onTriggered()
+                    event.accepted = true
+                } else if (event.key == Qt.Key_Escape) {
+                    generalControls.focus = true
+                    event.accepted = true
+                }
+            }
         }
         Button {
             action: sendTextAction

@@ -1,0 +1,6 @@
+
+
+Ausführen: qmlscene main.qml
+  (qmlscene ist Teil von Qt5)
+
+Der main-Tab ist voll funktional, von den anderen funktionieren nur vom Video-Tab die Bibliotheks-Verwaltungs-Buttons.

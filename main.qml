@@ -5,6 +5,7 @@ Rectangle {
     id: frame
     height: 300
     width: 500
+    //property string xbmcUrl: 'http://192.168.178.240:8080/jsonrpc'
     property string xbmcUrl: 'http://morgoth:8080/jsonrpc'
     property bool connected: false
 
@@ -56,7 +57,6 @@ Rectangle {
     TabView {
         id: tabView
         anchors.fill: parent
-        focus: true
         style: MyTabViewStyle {}
 
         onCurrentIndexChanged: {

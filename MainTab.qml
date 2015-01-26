@@ -4,13 +4,7 @@ import QtQuick.Controls 1.1
 Tab {
     id: mainTab
     title: 'Main Controls'
-    focus: true
-
-    //onActiveChanged: {
-        //if (active) {
-            //forceActiveFocus()
-        //}
-    //}
+    //focus: true
 
     Rectangle {
         id: mainRec
@@ -21,9 +15,22 @@ Tab {
         property int playerid: -1
         property string playertype: 'none'
 
+        function stealFocus() {
+            mainRec.focus = false
+            mainRec.Keys.forwardTo = []
+        }
+        function returnFocus() {
+            mainRec.focus = true
+            mainRec.Keys.forwardTo = [generalControls, playerControls]
+        }
+
         focus: true
-        //Component.onCompleted: mainRec.forceActiveFocus()
         Keys.forwardTo: [generalControls, playerControls]
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: mainRec.focus = true
+        }
 
         GeneralControls {
             id: generalControls
