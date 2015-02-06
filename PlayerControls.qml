@@ -16,7 +16,6 @@ Rectangle {
         updateTimer.running = enabled
 
         if (enabled && playertype != 'video') {
-            console.log(playertype)
             audioStreamBox.enabled = false
             subtitleBox.enabled = false
         }
@@ -27,7 +26,6 @@ Rectangle {
                    ', "properties": [' + properties + ']}'
         requestData('"Player.GetProperties"', args, setterMethod)
     }
-
 
     function arrays_equal(arr0, arr1) {
         if (arr0 == arr1) return true;
@@ -136,6 +134,43 @@ Rectangle {
         requestPlayerProperties('"time"', setVideoTime)
     }
 
+    function setNowPlayingText(jsonObj) {
+        var newText = ' \n '
+        //console.log(jsonObj.result.item.type)
+        if (jsonObj.result.item.type == 'episode') {
+            var season = jsonObj.result.item.season
+            if (season < 10) {
+                season = '0' + season
+            }
+            var episode = jsonObj.result.item.episode
+            if (episode < 10) {
+                episode = '0' + episode
+            }
+            newText = jsonObj.result.item.showtitle +
+                      ' S' + season + 'E' + episode +
+                      '\n' + jsonObj.result.item.title
+        } else if (jsonObj.result.item.type == 'movie') {
+            newText = jsonObj.result.item.title + '\n'
+        } else if (jsonObj.result.item.type == 'song') {
+            newText = jsonObj.result.item.artist + 
+                      ' — ' + jsonObj.result.item.album +
+                      '\n' + jsonObj.result.item.title
+        } else {
+            newText = jsonObj.result.item.title + '\n'
+        }
+        nowPlayingText.text = newText
+    }
+
+    function updateNowPlayingText() {
+        var args = '{"playerid": ' + playerid +
+                   ', "properties": [' +
+                   '"title", ' +
+                   '"episode", "season", "showtitle", "tvshowid", ' +
+                   '"album", "artist"' +
+                   ']}'
+        requestData('"Player.GetItem"', args, setNowPlayingText)
+    }
+
     Keys.onSpacePressed: playPauseAction.onTriggered()
     Keys.onEscapePressed: stopAction.onTriggered()
 
@@ -146,6 +181,7 @@ Rectangle {
         running: ! parent.disabled
         triggeredOnStart: true
         onTriggered: {
+            updateNowPlayingText()
             updateVideoTimes()
             if (playertype == 'video') {
                 updateAudioStreamBox()
@@ -177,6 +213,13 @@ Rectangle {
     Column {
         anchors.fill: parent
         spacing: 7
+
+        Row {
+            Text {
+                id: nowPlayingText
+                text: ' \n '
+            }
+        }
 
         Row {
             Button {

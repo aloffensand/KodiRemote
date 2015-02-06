@@ -54,6 +54,9 @@ Row {
             updatePlayeridBox()
         }
         onCurrentIndexChanged: {
+            if (model[currentIndex] == null) {
+                return
+            }
             var temp = model[currentIndex]
             var tempid = temp.split(':')[0]
             var temptype = temp.split(':')[1]

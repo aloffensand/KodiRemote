@@ -40,7 +40,7 @@ Tab {
                 right: parent.right
                 margins: marginVal
             }
-            height: ( parent.height - rowHeight ) / 2 - marginVal
+            height: ( mainRec.height - rowHeight ) / 2 - marginVal - 25
         }
 
         ChoosePlayerRow {

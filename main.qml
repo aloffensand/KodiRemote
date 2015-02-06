@@ -37,21 +37,34 @@ Rectangle {
         curl.onreadystatechange = function() {
             if(curl.readyState == curl.DONE) {
                 try {
-                    setterMethod(eval('(' + curl.responseText + ')'))
+                    //setterMethod(eval('(' + curl.responseText + ')'))
+                    callSetterMethod(eval('(' + curl.responseText + ')'), setterMethod)
                     if ( ! connected) {
-                        console.log('Connection established.')
+                        console.log(new Date().toLocaleTimeString() +
+                                    'Connection established.')
                         connected = true
                     }
                     //console.log(curl.responseText)
                 } catch (e) {
                     if (connected) {
-                        console.log('Connection lost.')
+                        console.log(new Date().toLocaleTimeString() +
+                                    'Connection lost.')
                         connected = false
                     }
                 }
             }
         }
         curl.send(data)
+    }
+
+    function callSetterMethod(jsonObj, setterMethod) {
+        if (jsonObj.error != null) {
+            console.error('Error ' + jsonObj.error.code + ': ' +
+                          jsonObj.error.message + '(' +
+                          jsonObj.error.data + ')')
+        } else {
+            setterMethod(jsonObj)
+        }
     }
 
     TabView {
@@ -69,6 +82,9 @@ Rectangle {
         }
         VideoTab {
             id: videoTab
+        }
+        SettingsTab {
+            id: settingsTab
         }
     }
 }

@@ -1,5 +1,5 @@
-import QtQuick 2.1
-import QtQuick.Controls 1.1
+import QtQuick 2.2
+import QtQuick.Controls 1.2
 
 Rectangle {
     id: generalControls
@@ -27,6 +27,12 @@ Rectangle {
             infoAction.onTriggered()
             event.accepted = true
         }
+    }
+
+    Action {
+        id: settingsAction
+        shortcut: StandardKey.Preferences
+        onTriggered: console.log('Settings')
     }
 
     Action {
@@ -69,7 +75,7 @@ Rectangle {
         id: backAction
         text: 'Back'
         tooltip: 'Back (Backspace)'
-        shortcut: StandardKey.Back
+        //shortcut: StandardKey.Back
         onTriggered: {
             console.log('Moving back')
             sendCommand('"Input.Back"', '{}')
