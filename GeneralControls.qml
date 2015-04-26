@@ -7,26 +7,24 @@ Rectangle {
 
     //focus: true
 
-    Keys.onUpPressed: upAction.onTriggered()
-    Keys.onDownPressed: downAction.onTriggered()
-    Keys.onLeftPressed: leftAction.onTriggered()
-    Keys.onRightPressed: rightAction.onTriggered()
-    //Keys.onBackspacePressed: backAction.onTriggered()
-    Keys.onReturnPressed: selectAction.onTriggered()
-    Keys.onEnterPressed: selectAction.onTriggered()
-    Keys.onMenuPressed: contextAction.onTriggered()
+    //Keys.onReturnPressed: selectAction.onTriggered()
+    //Keys.onEnterPressed: selectAction.onTriggered()
 
     Keys.onPressed: {
-        if (event.key == Qt.Key_Backspace) {
-            backAction.onTriggered()
-            event.accepted = true
-        } else if (event.key == Qt.Key_T) {
+        if (event.key == Qt.Key_T) {
             textBox.focus = true
             event.accepted = true
-        } else if (event.key == Qt.Key_I) {
-            infoAction.onTriggered()
-            event.accepted = true
         }
+        //if (event.key == Qt.Key_Backspace) {
+            //backAction.onTriggered()
+            //event.accepted = true
+        //} else if (event.key == Qt.Key_T) {
+            //textBox.focus = true
+            //event.accepted = true
+        //} else if (event.key == Qt.Key_I) {
+            //infoAction.onTriggered()
+            //event.accepted = true
+        //}
     }
 
     Action {
@@ -39,6 +37,7 @@ Rectangle {
         id: upAction
         text: 'Up'
         tooltip: 'Up (Up Arrow)'
+        shortcut: 'Up'
         onTriggered: {
             console.log('Moving up')
             sendCommand('"input.up"', '{}')
@@ -48,6 +47,7 @@ Rectangle {
         id: downAction
         text: "Down"
         tooltip: 'Down (Down Arrow)'
+        shortcut: 'Down'
         onTriggered: {
             console.log('Moving down')
             sendCommand('"input.down"', '{}')
@@ -57,6 +57,7 @@ Rectangle {
         id: leftAction
         text: 'Left'
         tooltip: 'Left (Left Arrow)'
+        shortcut: 'Left'
         onTriggered: {
             console.log('Moving left')
             sendCommand('"input.left"', '{}')
@@ -66,6 +67,7 @@ Rectangle {
         id: rightAction
         text: 'Right'
         tooltip: 'Right (Right Arrow)'
+        shortcut: 'Right'
         onTriggered: {
             console.log('Moving right')
             sendCommand('"input.right"', '{}')
@@ -75,6 +77,7 @@ Rectangle {
         id: backAction
         text: 'Back'
         tooltip: 'Back (Backspace)'
+        shortcut: 'Backspace'
         //shortcut: StandardKey.Back
         onTriggered: {
             console.log('Moving back')
@@ -85,6 +88,7 @@ Rectangle {
         id: homeAction
         text: 'Home'
         tooltip: 'Home ()'
+        shortcut: ''
         onTriggered: {
             console.log('Going Home')
             sendCommand('"Input.Home"', '{}')
@@ -93,7 +97,8 @@ Rectangle {
     Action {
         id: selectAction
         text: 'Select'
-        tooltip: 'Select (Return/Enter)'
+        tooltip: 'Select (Return)'
+        shortcut: 'Return'
         onTriggered: {
             console.log('Selecting item')
             sendCommand('"Input.Select"', '{}')
@@ -103,6 +108,7 @@ Rectangle {
         id: contextAction
         text: 'Context'
         tooltip: 'Context Menu (Context menu)'
+        shortcut: 'Menu'
         onTriggered: {
             console.log('Opening context menu')
             sendCommand('"Input.ContextMenu"', '{}')
@@ -110,8 +116,9 @@ Rectangle {
     }
     Action {
         id: infoAction
-        text: 'Info'
+        text: '&Info'
         tooltip: 'Information (i)'
+        shortcut: 'I'
         onTriggered: {
             console.log('Showing informations')
             sendCommand('"Input.Info"', '{}')
@@ -124,7 +131,8 @@ Rectangle {
         tooltip: 'Send text (Enter while in input field)'
         onTriggered: {
             console.log('Sending text ' + textBox.text)
-            sendCommand('"Input.SendText"', '{"text": ' + textBox.text + '}')
+            sendCommand('"Input.SendText"', '{"text": "' + textBox.text + '"}')
+            sendCommand('"Input.endText"', '{"text": "' + textBox.text + '"}')
             generalControls.focus = true
         }
     }

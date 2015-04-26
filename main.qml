@@ -15,36 +15,26 @@ Rectangle {
     }
 
     function sendCommand(methodString, paramsString) {
-        var curl = new XMLHttpRequest();
-        var data = '{"jsonrpc": "2.0", ' +
-                   '"method": ' + methodString + ', ' +
-                   '"params": ' + paramsString + ', ' +
-                   '"id": "1"}'
-        curl.open("POST", xbmcUrl, true)
-        curl.setRequestHeader('Content-Type', 'application/json')
-        curl.send(data)
+        requestData(methodString, paramsString, null)
     }
 
     function requestData(methodString, paramsString, setterMethod) {
         var curl = new XMLHttpRequest();
-        var data = '{"jsonrpc": "2.0", ' +
-                   '"method": ' + methodString + ', ' +
-                   '"params": ' + paramsString + ', ' +
-                   '"id": "1"}'
+        var method = '"method": ' + methodString + ', ' +
+                     '"params": ' + paramsString + ', '
+        var data = '{"jsonrpc": "2.0", ' + method + '"id": "1"}'
         curl.open("POST", xbmcUrl, true)
         curl.setRequestHeader('Content-Type', 'application/json')
 
         curl.onreadystatechange = function() {
             if(curl.readyState == curl.DONE) {
                 try {
-                    //setterMethod(eval('(' + curl.responseText + ')'))
-                    callSetterMethod(eval('(' + curl.responseText + ')'), setterMethod)
+                    getResponse(method, eval('(' + curl.responseText + ')'), setterMethod)
                     if ( ! connected) {
                         console.log(new Date().toLocaleTimeString() +
                                     'Connection established.')
                         connected = true
                     }
-                    //console.log(curl.responseText)
                 } catch (e) {
                     if (connected) {
                         console.log(new Date().toLocaleTimeString() +
@@ -57,12 +47,13 @@ Rectangle {
         curl.send(data)
     }
 
-    function callSetterMethod(jsonObj, setterMethod) {
+    function getResponse(method, jsonObj, setterMethod) {
         if (jsonObj.error != null) {
-            console.error('Error ' + jsonObj.error.code + ': ' +
+            console.error('Error sending request\n\t' + method + ':\n\t' +
+                          jsonObj.error.code + ': ' +
                           jsonObj.error.message + '(' +
                           jsonObj.error.data + ')')
-        } else {
+        } else if (setterMethod != null) {
             setterMethod(jsonObj)
         }
     }

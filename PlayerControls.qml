@@ -21,6 +21,14 @@ Rectangle {
         }
     }
 
+    function fillWithZeroes(num) {
+        if (num < 10) {
+            return '0' + num
+        } else {
+            return num
+        }
+    }
+
     function requestPlayerProperties(properties, setterMethod) {
         var args = '{"playerid": ' + playerid +
                    ', "properties": [' + properties + ']}'
@@ -109,13 +117,15 @@ Rectangle {
     }
 
     function setVideoLength(jsonObj) {
+        var minutes = fillWithZeroes(jsonObj.result.totaltime.minutes)
+        var seconds = fillWithZeroes(jsonObj.result.totaltime.seconds)
         var length = jsonObj.result.totaltime.seconds
         length += jsonObj.result.totaltime.minutes * 60
         length += jsonObj.result.totaltime.hours * 3600
         progressSlider.videoLength = length
         progressText.curLength = jsonObj.result.totaltime.hours
-        progressText.curLength += ":" + jsonObj.result.totaltime.minutes + ":"
-        progressText.curLength += jsonObj.result.totaltime.seconds
+        progressText.curLength += ":" + minutes
+        progressText.curLength += ":" + seconds
     }
 
     function setVideoProgress(jsonObj) {
@@ -123,9 +133,11 @@ Rectangle {
     }
 
     function setVideoTime(jsonObj) {
+        var minutes = fillWithZeroes(jsonObj.result.time.minutes)
+        var seconds = fillWithZeroes(jsonObj.result.time.seconds)
         progressText.curTime = jsonObj.result.time.hours
-        progressText.curTime += ":" + jsonObj.result.time.minutes + ":"
-        progressText.curTime += jsonObj.result.time.seconds
+        progressText.curTime += ":" + minutes + ":"
+        progressText.curTime += seconds
     }
 
     function updateVideoTimes() {
@@ -138,14 +150,8 @@ Rectangle {
         var newText = ' \n '
         //console.log(jsonObj.result.item.type)
         if (jsonObj.result.item.type == 'episode') {
-            var season = jsonObj.result.item.season
-            if (season < 10) {
-                season = '0' + season
-            }
-            var episode = jsonObj.result.item.episode
-            if (episode < 10) {
-                episode = '0' + episode
-            }
+            var season = fillWithZeroes(jsonObj.result.item.season)
+            var episode = fillWithZeroes(jsonObj.result.item.episode)
             newText = jsonObj.result.item.showtitle +
                       ' S' + season + 'E' + episode +
                       '\n' + jsonObj.result.item.title
@@ -194,6 +200,7 @@ Rectangle {
         id: playPauseAction
         text: 'Play/Pause'
         tooltip: 'Play/Pause (Space)'
+        shortcut: 'Space'
         onTriggered: {
             console.log('Play/Pause...')
             sendCommand('"Player.PlayPause"', '{"playerid": ' + playerid + '}')
@@ -204,9 +211,33 @@ Rectangle {
         id: stopAction
         text: 'Stop'
         tooltip: 'Stop playback (Escape)'
+        shortcut: 'Escape'
         onTriggered: {
             console.log('Stopping playback')
             sendCommand('"Player.Stop"', '{"playerid": ' + playerid + '}')
+        }
+    }
+
+    Action {
+        id: nextAction
+        text: '&Next'
+        tooltip: 'Next item (N)'
+        shortcut: 'n'
+        onTriggered: {
+            var args = '{"playerid": ' + playerid +
+                       ', "to": "next"}'
+            sendCommand('"Player.GoTo"', args)
+        }
+    }
+    Action {
+        id: previousAction
+        text: '&Previous'
+        tooltip: 'Previous item (P)'
+        shortcut: 'p'
+        onTriggered: {
+            var args = '{"playerid": ' + playerid +
+                       ', "to": "previous"}'
+            sendCommand('"Player.GoTo"', args)
         }
     }
 
@@ -229,6 +260,15 @@ Rectangle {
             Button {
                 id: stopButton
                 action: stopAction
+            }
+            Text { text: '     ' }
+            Button {
+                id: previousButton
+                action: previousAction
+            }
+            Button {
+                id: nextButton
+                action: nextAction
             }
         }
 
