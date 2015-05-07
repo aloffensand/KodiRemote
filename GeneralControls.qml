@@ -1,5 +1,5 @@
-import QtQuick 2.2
-import QtQuick.Controls 1.2
+import QtQuick 2.4
+import QtQuick.Controls 1.3
 
 Rectangle {
     id: generalControls
@@ -30,7 +30,7 @@ Rectangle {
     Action {
         id: settingsAction
         shortcut: StandardKey.Preferences
-        onTriggered: console.log('Settings')
+        onTriggered: log('debug', 'Settings')
     }
 
     Action {
@@ -39,7 +39,7 @@ Rectangle {
         tooltip: 'Up (Up Arrow)'
         shortcut: 'Up'
         onTriggered: {
-            console.log('Moving up')
+            log('debug', 'Moving up')
             sendCommand('"input.up"', '{}')
         }
     }
@@ -49,7 +49,7 @@ Rectangle {
         tooltip: 'Down (Down Arrow)'
         shortcut: 'Down'
         onTriggered: {
-            console.log('Moving down')
+            log('debug', 'Moving down')
             sendCommand('"input.down"', '{}')
         }
     }
@@ -59,7 +59,7 @@ Rectangle {
         tooltip: 'Left (Left Arrow)'
         shortcut: 'Left'
         onTriggered: {
-            console.log('Moving left')
+            log('debug', 'Moving left')
             sendCommand('"input.left"', '{}')
         }
     }
@@ -69,7 +69,7 @@ Rectangle {
         tooltip: 'Right (Right Arrow)'
         shortcut: 'Right'
         onTriggered: {
-            console.log('Moving right')
+            log('debug', 'Moving right')
             sendCommand('"input.right"', '{}')
         }
     }
@@ -80,7 +80,7 @@ Rectangle {
         shortcut: 'Backspace'
         //shortcut: StandardKey.Back
         onTriggered: {
-            console.log('Moving back')
+            log('debug', 'Moving back')
             sendCommand('"Input.Back"', '{}')
         }
     }
@@ -90,7 +90,7 @@ Rectangle {
         tooltip: 'Home ()'
         shortcut: ''
         onTriggered: {
-            console.log('Going Home')
+            log('debug', 'Going Home')
             sendCommand('"Input.Home"', '{}')
         }
     }
@@ -98,9 +98,18 @@ Rectangle {
         id: selectAction
         text: 'Select'
         tooltip: 'Select (Return)'
+        //shortcut: ['Return', 'Enter']
         shortcut: 'Return'
+        //shortcut: "E" // e
+        //shortcut: "E,A" // this way, you have to press e and then a.
+        //shortcut: "s,e,l,e,c,t" // now you have to press sele.
+        //shortcut: "E","A" // only a
+        //shortcut: ("E","A") // only a
+        //shortcut: ["E","A"] // nothing
+        //shortcut: ("E"),("A") // only a
+        //shortcut: ("A"),("E") // only e
         onTriggered: {
-            console.log('Selecting item')
+            log('debug', 'Selecting item')
             sendCommand('"Input.Select"', '{}')
         }
     }
@@ -110,7 +119,7 @@ Rectangle {
         tooltip: 'Context Menu (Context menu)'
         shortcut: 'Menu'
         onTriggered: {
-            console.log('Opening context menu')
+            log('debug', 'Opening context menu')
             sendCommand('"Input.ContextMenu"', '{}')
         }
     }
@@ -120,7 +129,7 @@ Rectangle {
         tooltip: 'Information (i)'
         shortcut: 'I'
         onTriggered: {
-            console.log('Showing informations')
+            log('debug', 'Showing informations')
             sendCommand('"Input.Info"', '{}')
         }
     }
@@ -130,7 +139,7 @@ Rectangle {
         text: 'Send'
         tooltip: 'Send text (Enter while in input field)'
         onTriggered: {
-            console.log('Sending text ' + textBox.text)
+            log('debug', 'Sending text ' + textBox.text)
             sendCommand('"Input.SendText"', '{"text": "' + textBox.text + '"}')
             sendCommand('"Input.endText"', '{"text": "' + textBox.text + '"}')
             generalControls.focus = true

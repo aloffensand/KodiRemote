@@ -7,15 +7,13 @@ Rectangle {
     color: 'transparent'
     property int playerid: parent.playerid
     property string playertype: parent.playertype
+    property bool playing: (playertype != 'none')
 
     onPlayertypeChanged: {
-        var enabled = (playertype != 'none')
-        for( var i=0; i < children.length; i++) {
-            children[i].enabled = enabled
-        }
-        updateTimer.running = enabled
-
-        if (enabled && playertype != 'video') {
+        if (playertype == 'video') {
+            audioStreamBox.enabled = true
+            subtitleBox.enabled = true
+        } else {
             audioStreamBox.enabled = false
             subtitleBox.enabled = false
         }
@@ -148,7 +146,7 @@ Rectangle {
 
     function setNowPlayingText(jsonObj) {
         var newText = ' \n '
-        //console.log(jsonObj.result.item.type)
+        //log('debug', jsonObj.result.item.type)
         if (jsonObj.result.item.type == 'episode') {
             var season = fillWithZeroes(jsonObj.result.item.season)
             var episode = fillWithZeroes(jsonObj.result.item.episode)
@@ -177,15 +175,12 @@ Rectangle {
         requestData('"Player.GetItem"', args, setNowPlayingText)
     }
 
-    Keys.onSpacePressed: playPauseAction.onTriggered()
-    Keys.onEscapePressed: stopAction.onTriggered()
-
     Timer {
         id: updateTimer
         interval: 2000
         repeat: true
-        running: ! parent.disabled
         triggeredOnStart: true
+        running: playing
         onTriggered: {
             updateNowPlayingText()
             updateVideoTimes()
@@ -201,8 +196,9 @@ Rectangle {
         text: 'Play/Pause'
         tooltip: 'Play/Pause (Space)'
         shortcut: 'Space'
+        enabled: playing
         onTriggered: {
-            console.log('Play/Pause...')
+            log('debug', 'Play/Pause...')
             sendCommand('"Player.PlayPause"', '{"playerid": ' + playerid + '}')
         }
     }
@@ -212,8 +208,9 @@ Rectangle {
         text: 'Stop'
         tooltip: 'Stop playback (Escape)'
         shortcut: 'Escape'
+        enabled: playing
         onTriggered: {
-            console.log('Stopping playback')
+            log('debug', 'Stopping playback')
             sendCommand('"Player.Stop"', '{"playerid": ' + playerid + '}')
         }
     }
@@ -223,7 +220,9 @@ Rectangle {
         text: '&Next'
         tooltip: 'Next item (N)'
         shortcut: 'n'
+        enabled: playing
         onTriggered: {
+            log('debug', 'Next item')
             var args = '{"playerid": ' + playerid +
                        ', "to": "next"}'
             sendCommand('"Player.GoTo"', args)
@@ -234,7 +233,9 @@ Rectangle {
         text: '&Previous'
         tooltip: 'Previous item (P)'
         shortcut: 'p'
+        enabled: playing
         onTriggered: {
+            log('debug', 'Previous item')
             var args = '{"playerid": ' + playerid +
                        ', "to": "previous"}'
             sendCommand('"Player.GoTo"', args)
@@ -328,6 +329,7 @@ Rectangle {
             OtherSlider {
                 id: progressSlider
                 Layout.fillWidth: true
+                enabled: playing
                 minimumValue: 0
                 maximumValue: 100
                 style: OtherSliderStyle {}

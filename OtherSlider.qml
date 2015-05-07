@@ -153,6 +153,7 @@ Control {
     //property real hoveredValue: range.valueForPosition(__horizontal ? mouseArea.mouseX - fakeHandle.width/2 : mouseArea.mouseY - fakeHandle.height/2)
     property alias hoveredPosition: mouseArea.clampedPos
     property real hoveredValue: range.valueForPosition( mouseArea.clampedPos )
+    property bool enabled: true
     // END OF CHANGED
 
     /*!
@@ -186,10 +187,12 @@ Control {
 
     style: Qt.createComponent(Settings.style + "/SliderStyle.qml", slider)
 
-    Keys.onRightPressed: if (__horizontal) value += (maximumValue - minimumValue)/10.0
-    Keys.onLeftPressed: if (__horizontal) value -= (maximumValue - minimumValue)/10.0
-    Keys.onUpPressed: if (!__horizontal) value += (maximumValue - minimumValue)/10.0
-    Keys.onDownPressed: if (!__horizontal) value -= (maximumValue - minimumValue)/10.0
+    //CHANGED: added "enabled &&" to all lines
+    Keys.onRightPressed: if (enabled && __horizontal) value += (maximumValue - minimumValue)/10.0
+    Keys.onLeftPressed: if (enabled && __horizontal) value -= (maximumValue - minimumValue)/10.0
+    Keys.onUpPressed: if (enabled && !__horizontal) value += (maximumValue - minimumValue)/10.0
+    Keys.onDownPressed: if (enabled && !__horizontal) value -= (maximumValue - minimumValue)/10.0
+    //END OF CHANGED
 
     RangeModel {
         id: range
@@ -229,6 +232,7 @@ Control {
         property real pressY: 0
         // CHANGED
         property real clampedPos: 0
+        enabled: parent.enabled
         // END OF CHANGED
 
         function clamp ( val ) {

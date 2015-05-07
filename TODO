@@ -1,3 +1,6 @@
 
 
 Items are stacked when the mainTab gets too small
+connectionBox and messageBox overlap with items
+loglevel as a commandline option
+
