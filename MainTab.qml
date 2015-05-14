@@ -1,31 +1,33 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.1
+import QtQuick.Layouts 1.1
 
 Tab {
     id: mainTab
     title: 'Main Controls'
-    //focus: true
 
     Rectangle {
         id: mainRec
         anchors.fill: parent
-        color: colours.base
+        color: "transparent"
+        focus: true
+        Keys.forwardTo: [generalControls, playerControls]
         property int marginVal: height / 20
         property int rowHeight: 20
         property int playerid: -1
         property string playertype: 'none'
 
-        function stealFocus() {
-            mainRec.focus = false
-            mainRec.Keys.forwardTo = []
+        Timer {
+            id: updateTimer
+            interval: 1000
+            repeat: true
+            running: true
+            triggeredOnStart: true
+            onTriggered: {
+                choosePlayerRow.updatePlayeridBox()
+                playerControls.optionalTimer()
+            }
         }
-        function returnFocus() {
-            mainRec.focus = true
-            mainRec.Keys.forwardTo = [generalControls, playerControls]
-        }
-
-        focus: true
-        Keys.forwardTo: [generalControls, playerControls]
 
         MouseArea {
             anchors.fill: parent
@@ -40,7 +42,6 @@ Tab {
                 right: parent.right
                 margins: marginVal
             }
-            height: ( mainRec.height - rowHeight ) / 2 - marginVal - 25
         }
 
         ChoosePlayerRow {
@@ -51,8 +52,9 @@ Tab {
                 right: parent.right
                 leftMargin: 1
                 rightMargin: 1
+                topMargin: marginVal
             }
-            height: rowHeight
+            //height: rowHeight
         }
 
         PlayerControls {

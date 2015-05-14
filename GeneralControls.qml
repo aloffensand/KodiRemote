@@ -4,40 +4,31 @@ import QtQuick.Controls 1.3
 Rectangle {
     id: generalControls
     color: 'transparent'
-
-    //focus: true
-
-    //Keys.onReturnPressed: selectAction.onTriggered()
-    //Keys.onEnterPressed: selectAction.onTriggered()
+    height: childrenRect.height
+    width: childrenRect.width
 
     Keys.onPressed: {
         if (event.key == Qt.Key_T) {
             textBox.focus = true
             event.accepted = true
         }
-        //if (event.key == Qt.Key_Backspace) {
-            //backAction.onTriggered()
-            //event.accepted = true
-        //} else if (event.key == Qt.Key_T) {
-            //textBox.focus = true
-            //event.accepted = true
-        //} else if (event.key == Qt.Key_I) {
-            //infoAction.onTriggered()
-            //event.accepted = true
-        //}
     }
 
     Action {
         id: settingsAction
-        shortcut: StandardKey.Preferences
-        onTriggered: log('debug', 'Settings')
+        shortcut: shortcut_settings
+        onTriggered: {
+            log('debug', 'Settings')
+        }
     }
 
     Action {
         id: upAction
-        text: 'Up'
+        //text: 'Up'
         tooltip: 'Up (Up Arrow)'
-        shortcut: 'Up'
+        iconName: 'go-up'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_up
         onTriggered: {
             log('debug', 'Moving up')
             sendCommand('"input.up"', '{}')
@@ -45,9 +36,11 @@ Rectangle {
     }
     Action {
         id: downAction
-        text: "Down"
+        //text: "Down"
         tooltip: 'Down (Down Arrow)'
-        shortcut: 'Down'
+        iconName: 'go-down'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_down
         onTriggered: {
             log('debug', 'Moving down')
             sendCommand('"input.down"', '{}')
@@ -55,9 +48,11 @@ Rectangle {
     }
     Action {
         id: leftAction
-        text: 'Left'
+        //text: 'Left'
         tooltip: 'Left (Left Arrow)'
-        shortcut: 'Left'
+        iconName: 'go-previous'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_left
         onTriggered: {
             log('debug', 'Moving left')
             sendCommand('"input.left"', '{}')
@@ -65,9 +60,11 @@ Rectangle {
     }
      Action {
         id: rightAction
-        text: 'Right'
+        //text: 'Right'
         tooltip: 'Right (Right Arrow)'
-        shortcut: 'Right'
+        iconName: 'go-next'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_right
         onTriggered: {
             log('debug', 'Moving right')
             sendCommand('"input.right"', '{}')
@@ -75,10 +72,11 @@ Rectangle {
     }
     Action {
         id: backAction
-        text: 'Back'
+        //text: 'Back'
         tooltip: 'Back (Backspace)'
-        shortcut: 'Backspace'
-        //shortcut: StandardKey.Back
+        iconName: 'edit-undo'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_back
         onTriggered: {
             log('debug', 'Moving back')
             sendCommand('"Input.Back"', '{}')
@@ -86,9 +84,11 @@ Rectangle {
     }
     Action {
         id: homeAction
-        text: 'Home'
-        tooltip: 'Home ()'
-        shortcut: ''
+        //text: '&Home'
+        tooltip: 'Home (H)'
+        iconName: 'go-home'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_home
         onTriggered: {
             log('debug', 'Going Home')
             sendCommand('"Input.Home"', '{}')
@@ -96,18 +96,11 @@ Rectangle {
     }
     Action {
         id: selectAction
-        text: 'Select'
+        //text: 'Select'
         tooltip: 'Select (Return)'
-        //shortcut: ['Return', 'Enter']
-        shortcut: 'Return'
-        //shortcut: "E" // e
-        //shortcut: "E,A" // this way, you have to press e and then a.
-        //shortcut: "s,e,l,e,c,t" // now you have to press sele.
-        //shortcut: "E","A" // only a
-        //shortcut: ("E","A") // only a
-        //shortcut: ["E","A"] // nothing
-        //shortcut: ("E"),("A") // only a
-        //shortcut: ("A"),("E") // only e
+        iconName: 'key-enter'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_select
         onTriggered: {
             log('debug', 'Selecting item')
             sendCommand('"Input.Select"', '{}')
@@ -115,9 +108,11 @@ Rectangle {
     }
     Action {
         id: contextAction
-        text: 'Context'
+        //text: 'Context'
         tooltip: 'Context Menu (Context menu)'
-        shortcut: 'Menu'
+        iconName: 'open-menu-symbolic.symbolic'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_context
         onTriggered: {
             log('debug', 'Opening context menu')
             sendCommand('"Input.ContextMenu"', '{}')
@@ -125,9 +120,11 @@ Rectangle {
     }
     Action {
         id: infoAction
-        text: '&Info'
+        //text: '&Info'
         tooltip: 'Information (i)'
-        shortcut: 'I'
+        iconName: 'help-about'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_info
         onTriggered: {
             log('debug', 'Showing informations')
             sendCommand('"Input.Info"', '{}')
@@ -149,37 +146,20 @@ Rectangle {
     Grid {
         id: controlGrid
         columns: 3
-        Button {
-            action: backAction
-        }
-        Button {
-            action: upAction
-        }
-        Button {
-            action: infoAction
-        }
-        Button {
-            action: leftAction
-        }
-        Button {
-            action: selectAction
-        }
-        Button {
-            action: rightAction
-        }
-        Button {
-            action: homeAction
-        }
-        Button {
-            action: downAction
-        }
-        Button {
-            action: contextAction
-        }
+        Button { action: backAction }
+        Button { action: upAction }
+        Button { action: infoAction }
+        Button { action: leftAction }
+        Button { action: selectAction }
+        Button { action: rightAction }
+        Button { action: homeAction }
+        Button { action: downAction }
+        Button { action: contextAction }
     }
     Row {
         anchors.left: controlGrid.right
         anchors.leftMargin: 5
+        anchors.bottom: controlGrid.bottom
         TextField {
             id: textBox
             placeholderText: 'Send text (t)'

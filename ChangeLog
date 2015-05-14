@@ -1,0 +1,53 @@
+
+2015-05-14  Aina Lea Offensand
+
+	* SettingsTab.qml, mainTab.qml (window Settings): Added new settings
+	category (and new settings)
+
+	* mainTab.qml, SettingsTab.qml (hostname, port, xbmcUrl): The URL is now
+	put automatically put together from hostname and port.
+
+	* PlayerControls.qml, GeneralControls.qml (*Action): Most buttons have
+	icons instead of text.
+
+	* PlayerControls.qml (showOsdAction): Added an OSD Button
+
+	* PlayerControls.qml, mainTab.qml (playpauseselectAction): Added
+	playpauseselect action and shortcut
+
+	* PlayerControls.qml, GeneralControls.qml, ChoosePlayerRow.qml, MainTab.qml:
+	Fixed sizes of the MainTab's children so the controls don't overlap when the
+	window is too small; Instead, they now grow out of the window …
+
+	* Triangle.qml, PlayerControls.qml (progressRow): Changed the
+	progressSlider to a ProgressBar with a MouseArea underneath (will implement
+	the possibility to loop in a video later).
+
+	* PlayerControls.qml (jumpToText, jumpButton): Added a TextField and Button
+	to jump to a given time.
+
+	* PlayerControls.qml (jumpFromText, loopButton): Added some elements for
+	future features.
+
+	* main.qml (messageBox): Added showMessage function
+	* main.qml (messageBox, connectionBox): Added states, transitions and
+	animations.
+
+	* MyTabViewStyle.qml: When the TabBar has keyboard focus, the currently
+	focused tab is underlined.
+
+	* main.qml (frame): The root element is now a Window.
+
+	* main.cpp: Added a c++ file from which QML is called.
+
+	* PlayerControls.qml, MainTab.qml, ChoosePlayerRow.qml: Merged a few setter
+	functions and the updateTimers so there are fewer requests.
+
+	* main.qml (shortcuts, shortcut_*): Shortcuts are seperate strings instead
+	of a dict so they can be changed in the config file.
+
+	* main.qml (getResponse, expectedError): Bugfix (somewhat): When a video
+	ends, it doesn't throw a dozen errors anymore. However, it now doesn't
+	print these messages at all.
+
+	* ChangeLog: Added a changelog

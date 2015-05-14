@@ -5,17 +5,36 @@ import QtQuick.Layouts 1.1
 Rectangle {
     id: playerControls
     color: 'transparent'
-    property int playerid: parent.playerid
-    property string playertype: parent.playertype
+    height: childrenRect.height
+    property int playerid: mainRec.playerid
+    property string playertype: mainRec.playertype
     property bool playing: (playertype != 'none')
+
+    property var updateMethods: []
 
     onPlayertypeChanged: {
         if (playertype == 'video') {
             audioStreamBox.enabled = true
             subtitleBox.enabled = true
+            updateMethods = [
+                updateNowPlayingText, updateVideoTimes,
+                updateAudioStreamBox, updateSubtitleBox
+            ]
+        } else if (playertype != 'none') {
+            updateMethods = [
+                updateNowPlayingText, updateVideoTimes
+            ]
         } else {
             audioStreamBox.enabled = false
             subtitleBox.enabled = false
+            updateMethods = []
+        }
+        console.log(updateMethods)
+    }
+
+    function optionalTimer() {
+        for (var i=0; i<updateMethods.length; i++) {
+            updateMethods[i]()
         }
     }
 
@@ -25,12 +44,6 @@ Rectangle {
         } else {
             return num
         }
-    }
-
-    function requestPlayerProperties(properties, setterMethod) {
-        var args = '{"playerid": ' + playerid +
-                   ', "properties": [' + properties + ']}'
-        requestData('"Player.GetProperties"', args, setterMethod)
     }
 
     function arrays_equal(arr0, arr1) {
@@ -43,7 +56,13 @@ Rectangle {
         return true;
     }
 
-    function setAudioStreamList(jsonObj) {
+    function requestPlayerProperties(properties, setterMethod) {
+        var args = '{"playerid": ' + playerid +
+                   ', "properties": [' + properties + ']}'
+        requestData('"Player.GetProperties"', args, setterMethod)
+    }
+
+    function setAudioStreams(jsonObj) {
         var newList = []
         var streams = jsonObj.result.audiostreams
         var equal = (streams.length == audioStreamBox.model.length)
@@ -65,19 +84,15 @@ Rectangle {
         if ( ! equal) {
             audioStreamBox.model = newList
         }
-    }
-
-    function setCurrentAudioStream(jsonObj) {
         var index = jsonObj.result.currentaudiostream.index
         audioStreamBox.currentIndex = index
     }
 
     function updateAudioStreamBox() {
-        requestPlayerProperties('"audiostreams"', setAudioStreamList)
-        requestPlayerProperties('"currentaudiostream"', setCurrentAudioStream)
+        requestPlayerProperties('"audiostreams", "currentaudiostream"', setAudioStreams)
     }
 
-    function setSubtitleList(jsonObj) {
+    function setSubtitles(jsonObj) {
         var newList = ['-1: None']
         var subs = jsonObj.result.subtitles
         var equal = (subs.length == (subtitleBox.model.length - 1))
@@ -96,9 +111,7 @@ Rectangle {
         if ( ! equal) {
             subtitleBox.model = newList
         }
-    }
 
-    function setCurrentSubtitle(jsonObj) {
         var newIndex = subtitleBox.currentIndex
         if (jsonObj.result.subtitleenabled) {
             var newIndex = jsonObj.result.currentsubtitle.index + 1
@@ -109,28 +122,31 @@ Rectangle {
     }
 
     function updateSubtitleBox() {
-        requestPlayerProperties('"subtitles"', setSubtitleList)
-        var properties = '"currentsubtitle", "subtitleenabled"'
-        requestPlayerProperties(properties, setCurrentSubtitle)
+        var properties = '"subtitles", "currentsubtitle", "subtitleenabled"'
+        requestPlayerProperties(properties, setSubtitles)
     }
 
-    function setVideoLength(jsonObj) {
+    function setVideoTimes(jsonObj) {
         var minutes = fillWithZeroes(jsonObj.result.totaltime.minutes)
         var seconds = fillWithZeroes(jsonObj.result.totaltime.seconds)
         var length = jsonObj.result.totaltime.seconds
         length += jsonObj.result.totaltime.minutes * 60
         length += jsonObj.result.totaltime.hours * 3600
-        progressSlider.videoLength = length
+        //progressSlider.videoLength = length
+        progressBar.videoLength = length
         progressText.curLength = jsonObj.result.totaltime.hours
         progressText.curLength += ":" + minutes
         progressText.curLength += ":" + seconds
-    }
 
-    function setVideoProgress(jsonObj) {
-        progressSlider.value = jsonObj.result.percentage
-    }
+        //progressSlider.value = jsonObj.result.percentage
+        progressBar.value = jsonObj.result.percentage
+        if ( ! leftTriangle.editing) {
+            leftTriangle.x = ((progressBar.value/100) * progressBar.width) - leftTriangle.width
+        }
+        if ( ! rightTriangle.editing) {
+            rightTriangle.x = ((progressBar.value/100) * progressBar.width)
+        }
 
-    function setVideoTime(jsonObj) {
         var minutes = fillWithZeroes(jsonObj.result.time.minutes)
         var seconds = fillWithZeroes(jsonObj.result.time.seconds)
         progressText.curTime = jsonObj.result.time.hours
@@ -139,9 +155,8 @@ Rectangle {
     }
 
     function updateVideoTimes() {
-        requestPlayerProperties('"totaltime"', setVideoLength)
-        requestPlayerProperties('"percentage"', setVideoProgress)
-        requestPlayerProperties('"time"', setVideoTime)
+        var args = '"totaltime", "percentage", "time"'
+        requestPlayerProperties(args, setVideoTimes)
     }
 
     function setNowPlayingText(jsonObj) {
@@ -175,27 +190,13 @@ Rectangle {
         requestData('"Player.GetItem"', args, setNowPlayingText)
     }
 
-    Timer {
-        id: updateTimer
-        interval: 2000
-        repeat: true
-        triggeredOnStart: true
-        running: playing
-        onTriggered: {
-            updateNowPlayingText()
-            updateVideoTimes()
-            if (playertype == 'video') {
-                updateAudioStreamBox()
-                updateSubtitleBox()
-            }
-        }
-    }
-
     Action {
         id: playPauseAction
-        text: 'Play/Pause'
+        //text: 'Play/Pause'
         tooltip: 'Play/Pause (Space)'
-        shortcut: 'Space'
+        iconName: 'media-playback-pause'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_playpause
         enabled: playing
         onTriggered: {
             log('debug', 'Play/Pause...')
@@ -205,9 +206,11 @@ Rectangle {
 
     Action {
         id: stopAction
-        text: 'Stop'
+        //text: 'Stop'
         tooltip: 'Stop playback (Escape)'
-        shortcut: 'Escape'
+        iconName: 'media-playback-stop'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_stop
         enabled: playing
         onTriggered: {
             log('debug', 'Stopping playback')
@@ -217,9 +220,12 @@ Rectangle {
 
     Action {
         id: nextAction
-        text: '&Next'
+        //text: '&Next'
         tooltip: 'Next item (N)'
-        shortcut: 'n'
+        //iconName: 'media-next'
+        iconName: 'go-next'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_next
         enabled: playing
         onTriggered: {
             log('debug', 'Next item')
@@ -230,15 +236,43 @@ Rectangle {
     }
     Action {
         id: previousAction
-        text: '&Previous'
+        //text: '&Previous'
         tooltip: 'Previous item (P)'
-        shortcut: 'p'
+        //iconName: 'media-previous'
+        iconName: 'go-previous'
+        iconSource: 'icons/' + iconName + '.png'
+        shortcut: shortcut_previous
         enabled: playing
         onTriggered: {
             log('debug', 'Previous item')
             var args = '{"playerid": ' + playerid +
                        ', "to": "previous"}'
             sendCommand('"Player.GoTo"', args)
+        }
+    }
+    Action {
+        id: showOsdAction
+        text: 'Show OSD'
+        tooltip: 'Show OnScreenDisplay for the current player'
+        shortcut: shortcut_osd
+        onTriggered: {
+            log('debug', 'Showing OSD')
+            sendCommand('"Input.ShowOSD"', '{}')
+        }
+    }
+
+    Action {
+        id: playpauseselectAction
+        tooltip: 'If there is an active player, this will act as PlayPause; else, it will be Select.'
+        shortcut: shortcut_playpauseselect
+        onTriggered: {
+            if (playing) {
+                log('debug', 'Sending playpause')
+                sendCommand('"Player.PlayPause"', '{"playerid": ' + playerid + '}')
+            } else {
+                log('debug', 'Selecting item')
+                sendCommand('"Input.Select"', '{}')
+            }
         }
     }
 
@@ -254,23 +288,13 @@ Rectangle {
         }
 
         Row {
-            Button {
-                id: playPauseButton
-                action: playPauseAction
-            }
-            Button {
-                id: stopButton
-                action: stopAction
-            }
+            Button { action: playPauseAction }
+            Button { action: stopAction }
             Text { text: '     ' }
-            Button {
-                id: previousButton
-                action: previousAction
-            }
-            Button {
-                id: nextButton
-                action: nextAction
-            }
+            Button { action: previousAction }
+            Button { action: nextAction }
+            Text { text: '      ' }
+            Button { action: showOsdAction }
         }
 
         Grid {
@@ -326,33 +350,111 @@ Rectangle {
             width: parent.width
             spacing: 7
 
-            OtherSlider {
-                id: progressSlider
+            Rectangle {
+                id: progressRect
                 Layout.fillWidth: true
-                enabled: playing
-                minimumValue: 0
-                maximumValue: 100
-                style: OtherSliderStyle {}
-                property int currentVideoTime: 0
-                property int videoLength: 45*60  // in seconds
+                height: progressBar.height + leftTriangle.height + jumpToText.height
+                color: "transparent"
 
-                function getTime (percentage) {
-                    var total = percentage * videoLength / 100
-                    var hours = Math.floor(total / 3600)
-                    var minutes = Math.floor( (total / 60) % 60)
-                    var seconds = Math.floor(total % 60)
-                    return [hours, minutes, seconds]
+                // triangles are split
+                property bool split: false
+                // is split and both triangles are set
+                property bool looping: false
+                property real jumpFrom: 0
+                property real jumpTo: 0
+
+                ProgressBar {
+                    id: progressBar
+                    width: parent.width
+                    minimumValue: 0
+                    maximumValue: 100
+                    property int currentVideoTime: 0
+                    property int videoLength: 45*60  // in seconds
+
+                    function getTime (percentage) {
+                        var total = percentage * videoLength / 100
+                        var hours = Math.floor(total / 3600)
+                        var minutes = Math.floor( (total / 60) % 60)
+                        var seconds = Math.floor(total % 60)
+                        return [hours, minutes, seconds]
+                    }
+                }
+                function getJumpTextPosition (left, textWidth) {
+                    var pos = 0
+                    var leftBoundary = 0
+                    var rightBoundary = progressBar.width - textWidth
+                    if (left) {
+                        pos = leftTriangle.x - textWidth
+                    } else if (split) {
+                        pos = rightTriangle.x
+                    } else {
+                        pos = rightTriangle.x - textWidth / 2
+                    }
+                    pos = Math.max(pos, leftBoundary)
+                    pos = Math.min(pos, rightBoundary)
+                    return pos
                 }
 
-                onPressedChanged: {
-                    if ( ! pressed) {
-                        var newTime = getTime(value)
+                Triangle {
+                    id: leftTriangle
+                    anchors.top: progressBar.bottom
+                    // set to true so the triangle doesn't follow the current time
+                    property bool editing: false
+                    height: 15
+                    width: 10
+                    point1: width + ",0"
+                }
+                Triangle {
+                    id: rightTriangle
+                    anchors.top: progressBar.bottom
+                    // set to true so it doesn't follow the current time
+                    property bool editing: false
+                    height: leftTriangle.height
+                    width: leftTriangle.width
+                    point1: "0,0"
+                }
+                TextField {
+                    id: jumpFromText
+                    anchors.top: leftTriangle.bottom
+                    x: parent.getJumpTextPosition(true, width)
+                    visible: parent.split
+                    text: '0:00:00'
+                    inputMask: '9:99:99'
+                    property var re: /[0-9]:[0-5][0-9]:[0-5][0-9]/
+                    validator: RegExpValidator { regExp: jumpToText.re }
+                }
+                TextField {
+                    id: jumpToText
+                    anchors.top: rightTriangle.bottom
+                    x: parent.getJumpTextPosition(false, width)
+                    text: '0:00:00'
+                    inputMask: '9:99:99'
+                    property var re: /[0-9]:[0-5][0-9]:[0-5][0-9]/
+                    validator: RegExpValidator { regExp: jumpToText.re }
+                }
+
+                MouseArea {
+                    id: progressBarMouseArea
+                    anchors.fill: parent
+                    enabled: playing
+                    hoverEnabled: true
+
+                    onEntered: updateVideoTimes()
+                    onPositionChanged: {
+                        var newTime = progressBar.getTime(mouseX/width*100)
+                        hoverText.text = newTime[0] + ":" +
+                                         fillWithZeroes(newTime[1]) + ":" +
+                                         fillWithZeroes(newTime[2])
+                    }
+                    onClicked: {
+                        var newTime = progressBar.getTime(mouse.x/width*100)
                         var args = '{"playerid": ' + playerid +
                                    ', "value": ' + 
                                    '{ "hours": ' + newTime[0] +
                                    ', "minutes": ' + newTime[1] +
                                    ', "seconds": ' + newTime[2] + '}}'
                         sendCommand('"Player.Seek"', args)
+                        updateVideoTimes()
                     }
                 }
 
@@ -360,32 +462,67 @@ Rectangle {
                     id: hoverRect
                     height: hoverText.implicitHeight
                     width: Math.max(50, hoverText.implicitWidth)
-                    visible: progressSlider.hovered
-                    x: progressSlider.hoveredPosition
+                    visible: progressBarMouseArea.containsMouse
+                    x: progressBarMouseArea.mouseX
                     y: -10
                     color: "red"
+                    border.color: "black"
+                    border.width: 1
+                    radius: 2
                     Text { id: hoverText; text: "text" }
                 }
+            }
+            Rectangle {
+                color: "transparent"
+                height: childrenRect.height
+                width: childrenRect.width
+                Layout.alignment: Qt.AlignTop
 
-                onHoveredChanged: {
-                    if(hovered) {
-                        updateVideoTimes()
+                Text {
+                    id: progressText
+                    y: (progressBar.height-progressText.height) / 2 
+                    property string curTime: '0:00:00'
+                    property string curLength: '0:00:00'
+                    text: curTime + ' / ' + curLength
+                }
+                // Buttons: jump, start loop, end loop, cancel
+                Button {
+                    id: jumpButton
+                    y: progressBar.height + 8
+                    text: 'Jump'
+                    onClicked: {
+                        var newTime = jumpToText.text.split(':')
+                        // parseInt to strip leading zeroes, kodi can't handle those …
+                        var args = '{"playerid": ' + playerid +
+                                   ', "value": ' + 
+                                   '{ "hours": ' + parseInt(newTime[0], 10) +
+                                   ', "minutes": ' + parseInt(newTime[1], 10) +
+                                   ', "seconds": ' + parseInt(newTime[2], 10) + '}}'
+                        sendCommand('"Player.Seek"', args)
                     }
                 }
-
-                onHoveredValueChanged: {
-                    var newTime = progressSlider.getTime(hoveredValue)
-                    hoverText.text = newTime[0] + ":" +
-                                     newTime[1] + ":" +
-                                     newTime[2]
-                }
-            }
-
-            Text {
-                id: progressText
-                property string curTime: '0:00:00'
-                property string curLength: '0:00:00'
-                text: curTime + ' / ' + curLength
+                //Button {
+                    //id: loopButton
+                    //anchors.left: jumpButton.right
+                    //anchors.top: jumpButton.top
+                    //text: !progressRect.split ? 'Set startpoint' :
+                          //!progressRect.looping ? 'Set endpoint' :
+                          //'Cancel loop'
+                    //onClicked: {
+                        //if ( ! progressRect.split) {
+                            //leftTriangle.editing = true
+                            //progressRect.split = true
+                        //} else if ( ! progressRect.looping) {
+                            //rightTriangle.editing = true
+                            //progressRect.looping = true
+                        //} else {
+                            //leftTriangle.editing = false
+                            //rightTriangle.editing = false
+                            //progressRect.split = false
+                            //progressRect.looping = false
+                        //}
+                    //}
+                //}
             }
         }
     }

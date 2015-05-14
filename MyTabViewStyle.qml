@@ -21,6 +21,7 @@ TabViewStyle {
             id: text
             anchors.centerIn: parent
             font.pixelSize: 13
+            font.underline: styleData.activeFocus
             //color: styleData.selected ? colours.highlightedText :
                    //colours.buttonText
             color: colours.buttonText

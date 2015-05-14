@@ -16,17 +16,57 @@ Tab {
             id: applyAction
             text: 'Apply'
             onTriggered: {
-                console.log('applied.')
+                log('debug', 'Applying Settings.')
+                hostname = hostText.text
+                port = portText.text
+                loglevel = loglevelBox.currentText
+                shortcut_left = 'Left'
+                    //'right': 'Right', 
+                    //'up': 'Up',
+                    //'down': 'Down',
+                    //'back': 'Backspace', 
+                shortcut_select = shortcutSelectText.text
+                    //'context': 'Menu',
+                    //'info': 'i',
+                    //'home': 'h',
+                    //'enterText': 't',
+                    //'settings': '',
+                    //'playpause': 'Space',
+                    //'stop': 'Escape',
+                    //'next': 'n',
+                    //'previous': 'p'
             }
         }
 
-        Text {
-            text: 'Host: '
-        }
+        Text { text: 'Host: ' }
         TextField {
+            id: hostText
             Layout.columnSpan: 2
             Layout.fillWidth: true
-            text: 'http://morgoth:8080/jsonrpc'
+            text: hostname
+        }
+        Text { text: 'Port: ' }
+        TextField {
+            id: portText
+            Layout.columnSpan: 2
+            text: port
+        }
+
+        Text { text: 'Loglevel: ' }
+        ComboBox {
+            id: loglevelBox
+            //tooltip: 'How much information should be shown'
+            model: ['debug', 'info', 'notice', 'warning', 'error', 'none']
+            currentIndex: loglevel == 'none' ? 5 :
+                          7 - loglevels[loglevel]
+            Layout.columnSpan: 2
+        }
+
+        Text { text: 'Shortcuts' }
+        Text { text: 'Select' }
+        TextField {
+            id: shortcutSelectText
+            text: shortcut_select
         }
 
         // makes sure all other elements are aligned at the top
@@ -36,8 +76,6 @@ Tab {
             Layout.columnSpan: 3
         }
 
-        Button {
-            action: applyAction
-        }
+        Button { action: applyAction }
     }
 }

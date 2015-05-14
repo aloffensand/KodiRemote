@@ -1,6 +1,36 @@
 
 
-Items are stacked when the mainTab gets too small
+Use jsonRPC's notifications instead of polling for information
+Items grow out of the visible area when the mainTab gets too small
 connectionBox and messageBox overlap with items
-loglevel as a commandline option
+Commandline options?
 
+Add multimedia keys for player controls and enter for select
+    Apparently, you cannot define several shortcuts for one action …
+    I could say that everything has two shortcuts, then I'd just need to create
+    another action that has the same function and a different shortcut.
+It would be nice to have a "stop library scan" instead of that warning …
+Use jsonrpc notifications instead of actively asking for everything
+Skip intro: while watching a series, you can say how long the intro is (or
+    press "intro started" and "intro stopped" while watching an episode). Then
+    you can press a button when the intro starts to jump that far ahead.
+Progress bar: use a progress bar with a triangle over/under it to skip through
+    a video. When moving the triangle, it shows the editable time where you
+    would jump. Jump by pressing a button. Make that triangle splittable to
+    repeat a scene.
+
+Bugs:
+When I switch off my wifi device, I get a
+    "Method "GetAll" with signature "s" on interface
+    "org.freedesktop.DBus.Properties" doesn't exist".
+    I don't want any feedback besides "connection lost"…
+    The error seems to show up AFTER curl.send(data);
+    curl.onreadystatechange doesn't seem to get called anymore.
+    Strangely, building a try-catch around curl.onreadystatechange or curl.send
+    doesn't solve the problem though. Several other try-catches do nothing,
+too…
+
+When I cap the connection via kNetworkManager's Disable Wireless, it doesn't
+    show "connection lost". If I open the remote AFTER disabling wireless, it
+    works as expected. 
+    Update: Fixed?

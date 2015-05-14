@@ -2,7 +2,7 @@ import QtQuick 2.1
 import QtQuick.Controls 1.1
 
 Row {
-    property bool connected: true
+    width: parent.width
 
     function setActivePlayerList(jsonObj) {
         var newList = [ '-1: none' ]
@@ -25,16 +25,6 @@ Row {
 
     function updatePlayeridBox() {
         requestData('"Player.GetActivePlayers"', '{}', setActivePlayerList)
-    }
-
-    Timer {
-        interval: 500
-        repeat: true
-        running: true
-        triggeredOnStart: true
-        onTriggered: {
-            updatePlayeridBox()
-        }
     }
 
     Rectangle {
