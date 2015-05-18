@@ -6,76 +6,51 @@ Tab {
     id: settingsTab
     title: 'Settings'
 
+    TabView {
+        id: settingsTabView
+        frameVisible: false
+        tabsVisible: false
+        focus: true
 
-    GridLayout {
-        columns: 3
-        anchors.fill: parent
-        anchors.margins: parent.height / 20
+        onCurrentIndexChanged: {
+            getTab(currentIndex).forceActiveFocus()
+        }
 
-        Action {
-            id: applyAction
-            text: 'Apply'
-            onTriggered: {
-                log('debug', 'Applying Settings.')
-                hostname = hostText.text
-                port = portText.text
-                loglevel = loglevelBox.currentText
-                shortcut_left = 'Left'
-                    //'right': 'Right', 
-                    //'up': 'Up',
-                    //'down': 'Down',
-                    //'back': 'Backspace', 
-                shortcut_select = shortcutSelectText.text
-                    //'context': 'Menu',
-                    //'info': 'i',
-                    //'home': 'h',
-                    //'enterText': 't',
-                    //'settings': '',
-                    //'playpause': 'Space',
-                    //'stop': 'Escape',
-                    //'next': 'n',
-                    //'previous': 'p'
+        Tab {
+            Grid {
+                anchors.fill: parent
+                anchors.margins: parent.height / 20
+                spacing: 10
+
+                Button {
+                    text: "General"
+                    iconName: "something"
+                    iconSource: "icons/" + iconName + ".png"
+                    onClicked: settingsTabView.currentIndex = 1
+                }
+                Button {
+                    text: "Shortcuts"
+                    iconName: "preferences-desktop-keyboard"
+                    iconSource: "icons/" + iconName + ".png"
+                    onClicked: settingsTabView.currentIndex = 2
+                }
             }
         }
-
-        Text { text: 'Host: ' }
-        TextField {
-            id: hostText
-            Layout.columnSpan: 2
-            Layout.fillWidth: true
-            text: hostname
+        Tab {
+            id: generalSettingsTab
+            GeneralSettings {}
         }
-        Text { text: 'Port: ' }
-        TextField {
-            id: portText
-            Layout.columnSpan: 2
-            text: port
+        Tab {
+            id: shortcutSettingsTab
+            //ScrollView {
+                //anchors.fill: parent
+                //Rectangle {
+                    //anchors { top: parent.top; left: parent.left }
+                    //width: Math.max(childrenRect.width + shortcutSettings.margins*2, parent.width)
+                    //height: Math.max(childrenRect.height + shortcutSettings.margins*2, parent.height)
+                    ShortcutSettings { id: shortcutSettings }
+                //}
+            //}
         }
-
-        Text { text: 'Loglevel: ' }
-        ComboBox {
-            id: loglevelBox
-            //tooltip: 'How much information should be shown'
-            model: ['debug', 'info', 'notice', 'warning', 'error', 'none']
-            currentIndex: loglevel == 'none' ? 5 :
-                          7 - loglevels[loglevel]
-            Layout.columnSpan: 2
-        }
-
-        Text { text: 'Shortcuts' }
-        Text { text: 'Select' }
-        TextField {
-            id: shortcutSelectText
-            text: shortcut_select
-        }
-
-        // makes sure all other elements are aligned at the top
-        Rectangle {
-            id: invisiRec
-            Layout.fillHeight: true
-            Layout.columnSpan: 3
-        }
-
-        Button { action: applyAction }
     }
 }

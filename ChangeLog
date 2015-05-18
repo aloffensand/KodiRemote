@@ -30,6 +30,7 @@
 	future features.
 
 	* main.qml (messageBox): Added showMessage function
+
 	* main.qml (messageBox, connectionBox): Added states, transitions and
 	animations.
 
@@ -51,3 +52,38 @@
 	print these messages at all.
 
 	* ChangeLog: Added a changelog
+
+
+2015-05-17  Aina Lea Offensand
+	* SettingsTab.qml: Split Settings into different Tabs
+
+	* ShortcutSettings.qml, GeneralSettings.qml: New file
+
+	* ControlAction.qml, PlayerControlAction.qml: New file with default
+	settings for control elements in the MainTab; disables the Action when
+	MainTab is not active (before, the shortcuts were global)
+
+	* SecondShortcutAction.qml: New file
+
+	* GeneralControls, PlayerControls: Use ControlAction /
+	PlayerControlAction / SecondShortcutAction instead of Action; added second
+	shortcuts
+
+	* main.qml (Settings): Add new category "Shortcuts"
+
+	* ApplyAction.qml, BackAction.qml: Add new files for SettingsTab
+
+	* GeneralSettings.qml, ShortcutSettings.qml: New files
+
+	* PlayerControls.qml, ChoosePlayerRow.qml, ShortcutSettings.qml,
+	GeneralSettings.qml, VideoTab.qml, MyTabViewStyle.qml: replace Text with
+	Label
+
+	* ChoosePlayerRow.qml, PlayerControls.qml, ShortcutTextField.qml, main.qml:
+	Use the systemPalette
+
+	* PlayerControls.qml: Fix bug that gave a mouseclick to the progressRect
+	mouseArea instead of the jumpText
+
+	* PlayerControls.qml (progressRect): Put in a few margins to make look
+	better

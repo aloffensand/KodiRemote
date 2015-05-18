@@ -18,6 +18,8 @@ Progress bar: use a progress bar with a triangle over/under it to skip through
     a video. When moving the triangle, it shows the editable time where you
     would jump. Jump by pressing a button. Make that triangle splittable to
     repeat a scene.
+ProgressRect: the textfield is in the mousearea and can't be selected by
+    clicking
 
 Bugs:
 When I switch off my wifi device, I get a

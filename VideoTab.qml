@@ -101,7 +101,7 @@ Tab {
                     source: seriesTable.model[index].art3
                     sourceSize.width: 100
                 }
-                Text {
+                Label {
                     id: txt
                     //anchors { top: img.bottom; left: parent.left }
                     text: seriesTable.model[index].title

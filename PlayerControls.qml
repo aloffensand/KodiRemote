@@ -29,7 +29,6 @@ Rectangle {
             subtitleBox.enabled = false
             updateMethods = []
         }
-        console.log(updateMethods)
     }
 
     function optionalTimer() {
@@ -190,43 +189,35 @@ Rectangle {
         requestData('"Player.GetItem"', args, setNowPlayingText)
     }
 
-    Action {
+    PlayerControlAction {
         id: playPauseAction
-        //text: 'Play/Pause'
-        tooltip: 'Play/Pause (Space)'
+        description: 'Play/Pause'
         iconName: 'media-playback-pause'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_playpause
-        enabled: playing
+        shortcut1: shortcut_playpause1
         onTriggered: {
             log('debug', 'Play/Pause...')
             sendCommand('"Player.PlayPause"', '{"playerid": ' + playerid + '}')
         }
     }
-
-    Action {
+    SecondShortcutAction { mainAction: playPauseAction }
+    PlayerControlAction {
         id: stopAction
-        //text: 'Stop'
-        tooltip: 'Stop playback (Escape)'
+        description: 'Stop'
         iconName: 'media-playback-stop'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_stop
-        enabled: playing
         onTriggered: {
             log('debug', 'Stopping playback')
             sendCommand('"Player.Stop"', '{"playerid": ' + playerid + '}')
         }
     }
-
-    Action {
+    SecondShortcutAction { mainAction: stopAction }
+    PlayerControlAction {
         id: nextAction
-        //text: '&Next'
-        tooltip: 'Next item (N)'
-        //iconName: 'media-next'
+        description: 'Next'
         iconName: 'go-next'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_next
-        enabled: playing
+        shortcut1: shortcut_next1
         onTriggered: {
             log('debug', 'Next item')
             var args = '{"playerid": ' + playerid +
@@ -234,15 +225,13 @@ Rectangle {
             sendCommand('"Player.GoTo"', args)
         }
     }
-    Action {
+    SecondShortcutAction { mainAction: nextAction }
+    PlayerControlAction {
         id: previousAction
-        //text: '&Previous'
-        tooltip: 'Previous item (P)'
-        //iconName: 'media-previous'
+        description: 'Previous'
         iconName: 'go-previous'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_previous
-        enabled: playing
+        shortcut1: shortcut_previous1
         onTriggered: {
             log('debug', 'Previous item')
             var args = '{"playerid": ' + playerid +
@@ -250,21 +239,24 @@ Rectangle {
             sendCommand('"Player.GoTo"', args)
         }
     }
-    Action {
+    SecondShortcutAction { mainAction: previousAction }
+    PlayerControlAction {
         id: showOsdAction
         text: 'Show OSD'
-        tooltip: 'Show OnScreenDisplay for the current player'
+        description: 'Show OnScreenDisplay for the current player'
         shortcut: shortcut_osd
+        shortcut1: shortcut_osd1
         onTriggered: {
             log('debug', 'Showing OSD')
             sendCommand('"Input.ShowOSD"', '{}')
         }
     }
-
-    Action {
+    SecondShortcutAction { mainAction: showOsdAction }
+    PlayerControlAction {
         id: playpauseselectAction
-        tooltip: 'If there is an active player, this will act as PlayPause; else, it will be Select.'
+        description: 'If there is an active player, this will act as PlayPause; else, it will be Select.'
         shortcut: shortcut_playpauseselect
+        shortcut1: shortcut_playpauseselect1
         onTriggered: {
             if (playing) {
                 log('debug', 'Sending playpause')
@@ -275,13 +267,14 @@ Rectangle {
             }
         }
     }
+    SecondShortcutAction { mainAction: playpauseselectAction }
 
     Column {
         anchors.fill: parent
         spacing: 7
 
         Row {
-            Text {
+            Label {
                 id: nowPlayingText
                 text: ' \n '
             }
@@ -300,7 +293,7 @@ Rectangle {
         Grid {
             columns: 2
             verticalItemAlignment: Grid.AlignVCenter
-            Text {
+            Label {
                 text: 'Audio: '
             }
             ComboBox {
@@ -319,7 +312,7 @@ Rectangle {
                     sendCommand('"Player.SetAudioStream"', args)
                 }
             }
-            Text {
+            Label {
                 text: 'Subtitles:   '
             }
             ComboBox {
@@ -363,6 +356,7 @@ Rectangle {
                 property real jumpFrom: 0
                 property real jumpTo: 0
 
+                // FIXME: different colours when it's inactive
                 ProgressBar {
                     id: progressBar
                     width: parent.width
@@ -398,24 +392,31 @@ Rectangle {
                 Triangle {
                     id: leftTriangle
                     anchors.top: progressBar.bottom
+                    anchors.topMargin: 2
                     // set to true so the triangle doesn't follow the current time
                     property bool editing: false
                     height: 15
                     width: 10
+                    color: systemPalette.base
+                    borderColor: systemPalette.text
                     point1: width + ",0"
                 }
                 Triangle {
                     id: rightTriangle
                     anchors.top: progressBar.bottom
+                    anchors.topMargin: leftTriangle.anchors.topMargin
                     // set to true so it doesn't follow the current time
                     property bool editing: false
                     height: leftTriangle.height
                     width: leftTriangle.width
+                    color: systemPalette.base
+                    borderColor: systemPalette.text
                     point1: "0,0"
                 }
                 TextField {
                     id: jumpFromText
                     anchors.top: leftTriangle.bottom
+                    anchors.topMargin: 3
                     x: parent.getJumpTextPosition(true, width)
                     visible: parent.split
                     text: '0:00:00'
@@ -426,6 +427,7 @@ Rectangle {
                 TextField {
                     id: jumpToText
                     anchors.top: rightTriangle.bottom
+                    anchors.topMargin: jumpFromText.anchors.topMargin
                     x: parent.getJumpTextPosition(false, width)
                     text: '0:00:00'
                     inputMask: '9:99:99'
@@ -435,7 +437,10 @@ Rectangle {
 
                 MouseArea {
                     id: progressBarMouseArea
-                    anchors.fill: parent
+                    //anchors.fill: parent
+                    x: 0; y:0
+                    height: leftTriangle.y + leftTriangle.height
+                    width: progressBar.width
                     enabled: playing
                     hoverEnabled: true
 
@@ -460,16 +465,16 @@ Rectangle {
 
                 Rectangle {
                     id: hoverRect
-                    height: hoverText.implicitHeight
-                    width: Math.max(50, hoverText.implicitWidth)
+                    height: hoverText.implicitHeight + 4
+                    width: Math.max(50, hoverText.implicitWidth + 4)
                     visible: progressBarMouseArea.containsMouse
                     x: progressBarMouseArea.mouseX
                     y: -10
-                    color: "red"
+                    color: systemPalette.alternateBase
                     border.color: "black"
                     border.width: 1
                     radius: 2
-                    Text { id: hoverText; text: "text" }
+                    Label { id: hoverText; text: "text"; anchors.centerIn: parent }
                 }
             }
             Rectangle {
@@ -478,7 +483,7 @@ Rectangle {
                 width: childrenRect.width
                 Layout.alignment: Qt.AlignTop
 
-                Text {
+                Label {
                     id: progressText
                     y: (progressBar.height-progressText.height) / 2 
                     property string curTime: '0:00:00'

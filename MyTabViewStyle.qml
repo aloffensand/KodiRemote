@@ -17,7 +17,7 @@ TabViewStyle {
         implicitHeight: text.height + 4
         implicitWidth: Math.max(text.width + 13, 50)
         radius: 4
-        Text {
+        Label {
             id: text
             anchors.centerIn: parent
             font.pixelSize: 13

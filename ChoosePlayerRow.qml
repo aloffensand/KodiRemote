@@ -31,9 +31,9 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         height: 1
         width: 20
-        color: 'black'
+        color: systemPalette.text
     }
-    Text {
+    Label {
         anchors.verticalCenter: parent.verticalCenter
         text: ' Active Player:  '
     }
@@ -65,6 +65,6 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         height: 1
         width: parent.width - x - 1
-        color: 'black'
+        color: systemPalette.text
     }
 }

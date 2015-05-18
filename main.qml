@@ -10,10 +10,10 @@ Window {
     width: 500
     visible: true
 
-    //SystemPalette {
-        //id: colours
-        //colorGroup: SystemPalette.Active
-    //}
+    SystemPalette {
+        id: systemPalette
+        colorGroup: SystemPalette.Active
+    }
 
     property string hostname: 'morgoth'
     property string port: '8080'
@@ -33,52 +33,89 @@ Window {
     }
 
     property string shortcut_left: 'Left'
+    property string shortcut_left1: ''
     property string shortcut_right: 'Right'
+    property string shortcut_right1: ''
     property string shortcut_up: 'Up'
+    property string shortcut_up1: ''
     property string shortcut_down: 'Down'
+    property string shortcut_down1: ''
     property string shortcut_back: 'Backspace'
+    property string shortcut_back1: ''
     property string shortcut_select: 'Return'
+    property string shortcut_select1: 'Enter'
     property string shortcut_context: 'Menu'
+    property string shortcut_context1: ''
     property string shortcut_info: 'I'
+    property string shortcut_info1: ''
     property string shortcut_home: 'H'
+    property string shortcut_home1: ''
     property string shortcut_enterText: 'T'
+    property string shortcut_enterText1: ''
     property string shortcut_settings: ''
+    property string shortcut_settings1: ''
     property string shortcut_playpause: 'Space'
+    property string shortcut_playpause1: ''
     property string shortcut_stop: 'Escape'
+    property string shortcut_stop1: ''
     property string shortcut_next: 'N'
+    property string shortcut_next1: ''
     property string shortcut_previous: 'P'
+    property string shortcut_previous1: ''
     property string shortcut_osd: 'O'
+    property string shortcut_osd1: ''
     property string shortcut_playpauseselect: ''
+    property string shortcut_playpauseselect1: ''
 
     Settings {
-        category: 'window'
+        category: 'Window'
         property alias x: frame.x
         property alias y: frame.y
         property alias width: frame.width
         property alias height: frame.height
     }
     Settings {
-        category: 'other'
+        category: 'Other'
         property alias hostname: frame.hostname
         property alias port: frame.port
-        property alias shortcut_left: frame.shortcut_left
-        property alias shortcut_right: frame.shortcut_right
-        property alias shortcut_up: frame.shortcut_up
-        property alias shortcut_down: frame.shortcut_down
-        property alias shortcut_back: frame.shortcut_back
-        property alias shortcut_select: frame.shortcut_select
-        property alias shortcut_context: frame.shortcut_context
-        property alias shortcut_info: frame.shortcut_info
-        property alias shortcut_home: frame.shortcut_home
-        property alias shortcut_enterText: frame.shortcut_enterText
-        property alias shortcut_settings: frame.shortcut_settings
-        property alias shortcut_playpause: frame.shortcut_playpause
-        property alias shortcut_stop: frame.shortcut_stop
-        property alias shortcut_next: frame.shortcut_next
-        property alias shortcut_previous: frame.shortcut_previous
-        property alias shortcut_osd: frame.shortcut_osd
-        property alias shortcut_playpauseselect: frame.shortcut_playpauseselect
         property alias loglevel: frame.loglevel
+    }
+    Settings {
+        category: 'Shortcuts'
+        property alias left: frame.shortcut_left
+        property alias left1: frame.shortcut_left1
+        property alias right: frame.shortcut_right
+        property alias right1: frame.shortcut_right1
+        property alias up: frame.shortcut_up
+        property alias up1: frame.shortcut_up1
+        property alias down: frame.shortcut_down
+        property alias down1: frame.shortcut_down1
+        property alias back: frame.shortcut_back
+        property alias back1: frame.shortcut_back1
+        property alias select: frame.shortcut_select
+        property alias select1: frame.shortcut_select1
+        property alias context: frame.shortcut_context
+        property alias context1: frame.shortcut_context1
+        property alias info: frame.shortcut_info
+        property alias info1: frame.shortcut_info1
+        property alias home: frame.shortcut_home
+        property alias home1: frame.shortcut_home1
+        property alias enterText: frame.shortcut_enterText
+        property alias enterText1: frame.shortcut_enterText1
+        property alias settings: frame.shortcut_settings
+        property alias settings1: frame.shortcut_settings1
+        property alias playpause: frame.shortcut_playpause
+        property alias playpause1: frame.shortcut_playpause1
+        property alias stop: frame.shortcut_stop
+        property alias stop1: frame.shortcut_stop1
+        property alias next: frame.shortcut_next
+        property alias next1: frame.shortcut_next1
+        property alias previous: frame.shortcut_previous
+        property alias previous1: frame.shortcut_previous1
+        property alias osd: frame.shortcut_osd
+        property alias osd1: frame.shortcut_osd1
+        property alias playpauseselect: frame.shortcut_playpauseselect
+        property alias playpauseselect1: frame.shortcut_playpauseselect1
     }
 
     function sendCommand(methodString, paramsString) {
@@ -239,7 +276,7 @@ Window {
                 }
             }
 
-            Text {
+            Label {
                 z: 1
                 id: connectionText
                 anchors.centerIn: parent
@@ -307,9 +344,6 @@ Window {
                     }
                 }, State { name: "hidden" }
             ]
-            onTextChanged: console.log('text: ' + text)
-            onLastTextChanged: console.log('last: ' + lastText)
-            onStateChanged: console.log('state: ' + state)
             transitions: [
                 Transition {
                     from: "hidden"
@@ -335,7 +369,7 @@ Window {
                     }
                 }
             ]
-            Text {
+            Label {
                 id: messageText
                 anchors.centerIn: parent
                 text: ''

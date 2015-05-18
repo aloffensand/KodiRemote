@@ -7,129 +7,132 @@ Rectangle {
     height: childrenRect.height
     width: childrenRect.width
 
-    Keys.onPressed: {
-        if (event.key == Qt.Key_T) {
-            textBox.focus = true
-            event.accepted = true
-        }
+    ControlAction {
+        id: enterTextAction
+        shortcut: shortcut_enterText
+        shortcut1: shortcut_enterText1
+        onTriggered: textBox.focus = true
     }
+    SecondShortcutAction { mainAction: enterTextAction }
 
-    Action {
+    ControlAction {
         id: settingsAction
         shortcut: shortcut_settings
+        shortcut1: shortcut_settings1
         onTriggered: {
             log('debug', 'Settings')
         }
     }
+    SecondShortcutAction { mainAction: settingsAction }
 
-    Action {
+    ControlAction {
         id: upAction
-        //text: 'Up'
-        tooltip: 'Up (Up Arrow)'
+        description: 'Up'
         iconName: 'go-up'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_up
+        shortcut1: shortcut_up1
         onTriggered: {
             log('debug', 'Moving up')
             sendCommand('"input.up"', '{}')
         }
     }
-    Action {
+    SecondShortcutAction { mainAction: upAction }
+    ControlAction {
         id: downAction
-        //text: "Down"
-        tooltip: 'Down (Down Arrow)'
+        description: "Down"
         iconName: 'go-down'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_down
+        shortcut1: shortcut_down1
         onTriggered: {
             log('debug', 'Moving down')
             sendCommand('"input.down"', '{}')
         }
     }
-    Action {
+    SecondShortcutAction { mainAction: downAction }
+    ControlAction {
         id: leftAction
-        //text: 'Left'
-        tooltip: 'Left (Left Arrow)'
+        description: 'Left'
         iconName: 'go-previous'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_left
+        shortcut1: shortcut_left1
         onTriggered: {
             log('debug', 'Moving left')
             sendCommand('"input.left"', '{}')
         }
     }
-     Action {
+    SecondShortcutAction { mainAction: downAction }
+    ControlAction {
         id: rightAction
-        //text: 'Right'
-        tooltip: 'Right (Right Arrow)'
+        description: 'Right'
         iconName: 'go-next'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_right
+        shortcut1: shortcut_right1
         onTriggered: {
             log('debug', 'Moving right')
             sendCommand('"input.right"', '{}')
         }
     }
-    Action {
+    SecondShortcutAction { mainAction: rightAction }
+    ControlAction {
         id: backAction
-        //text: 'Back'
-        tooltip: 'Back (Backspace)'
+        description: 'Back'
         iconName: 'edit-undo'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_back
+        shortcut1: shortcut_back1
         onTriggered: {
             log('debug', 'Moving back')
             sendCommand('"Input.Back"', '{}')
         }
     }
-    Action {
+    SecondShortcutAction { mainAction: backAction }
+    ControlAction {
         id: homeAction
-        //text: '&Home'
-        tooltip: 'Home (H)'
+        description: 'Home'
         iconName: 'go-home'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_home
+        shortcut1: shortcut_home1
         onTriggered: {
             log('debug', 'Going Home')
             sendCommand('"Input.Home"', '{}')
         }
     }
-    Action {
+    SecondShortcutAction { mainAction: homeAction }
+    ControlAction {
         id: selectAction
-        //text: 'Select'
-        tooltip: 'Select (Return)'
+        description: 'Select'
         iconName: 'key-enter'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_select
+        shortcut1: shortcut_select1
         onTriggered: {
             log('debug', 'Selecting item')
             sendCommand('"Input.Select"', '{}')
         }
     }
-    Action {
+    SecondShortcutAction { mainAction: selectAction }
+    ControlAction {
         id: contextAction
-        //text: 'Context'
-        tooltip: 'Context Menu (Context menu)'
+        description: 'Context'
         iconName: 'open-menu-symbolic.symbolic'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_context
+        shortcut1: shortcut_context1
         onTriggered: {
             log('debug', 'Opening context menu')
             sendCommand('"Input.ContextMenu"', '{}')
         }
     }
-    Action {
+    SecondShortcutAction { mainAction: contextAction }
+    ControlAction {
         id: infoAction
-        //text: '&Info'
-        tooltip: 'Information (i)'
+        description: 'Info'
         iconName: 'help-about'
-        iconSource: 'icons/' + iconName + '.png'
         shortcut: shortcut_info
+        shortcut1: shortcut_info1
         onTriggered: {
             log('debug', 'Showing informations')
             sendCommand('"Input.Info"', '{}')
         }
     }
+    SecondShortcutAction { mainAction: infoAction }
 
     Action {
         id: sendTextAction
