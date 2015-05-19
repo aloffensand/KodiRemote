@@ -11,6 +11,7 @@ Tab {
         frameVisible: false
         tabsVisible: false
         focus: true
+        property int margins: 10
 
         onCurrentIndexChanged: {
             getTab(currentIndex).forceActiveFocus()
@@ -38,19 +39,33 @@ Tab {
         }
         Tab {
             id: generalSettingsTab
-            GeneralSettings {}
+            ScrollView {
+                anchors.fill: parent
+                Rectangle {
+                    width: childrenRect.width + margins*2
+                    height: childrenRect.height + margins*2
+                    GeneralSettings {
+                        x: margins
+                        y: margins
+                    }
+                }
+            }
         }
         Tab {
             id: shortcutSettingsTab
-            //ScrollView {
-                //anchors.fill: parent
-                //Rectangle {
-                    //anchors { top: parent.top; left: parent.left }
-                    //width: Math.max(childrenRect.width + shortcutSettings.margins*2, parent.width)
-                    //height: Math.max(childrenRect.height + shortcutSettings.margins*2, parent.height)
-                    ShortcutSettings { id: shortcutSettings }
-                //}
-            //}
+            ScrollView {
+                anchors.fill: parent
+                Rectangle {
+                    width: childrenRect.width + margins*2
+                    height: childrenRect.height + margins*2
+                    color: "transparent"
+                    ShortcutSettings {
+                        id: shortcutSettings
+                        x: margins
+                        y: margins
+                    }
+                }
+            }
         }
     }
 }

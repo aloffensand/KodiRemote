@@ -87,3 +87,11 @@
 
 	* PlayerControls.qml (progressRect): Put in a few margins to make look
 	better
+
+2015-05-19  Aina Lea Offensand
+	* SettingsTab.qml: Put all subTabs into ScrollViews
+
+	* ShortcutSettings.qml, ShortcutTextField.qml: Rewrite ShortcutSettings'
+	backend
+
+	* Icon.qml: New file
