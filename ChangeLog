@@ -95,3 +95,31 @@
 	backend
 
 	* Icon.qml: New file
+
+2015-05-19  Aina Lea Offensand
+	* GeneralSettings.qml: Delete anchors (Fix binding loop warning)
+
+	* SettingsTab.qml: Add TabBar, delete navigation tab
+
+	* SettingsTab.qml: Add 'title' and 'iconName' to tabs
+
+	* SettingsTab.qml (generalSettingsTab): make rectangle transparent
+
+	* main.qml: Add properties "margins" and "labelAlignment"
+
+	* SettingsTab.qml, MainTab.qml, VideoTab.qml: Use new property "margins"
+
+	* ShortcutSettings.qml, GeneralSettings.qml: Use new property
+	"labelAlignment"
+
+	* ShortcutSettings.qml, GeneralSettings.qml: Remove BackButton
+
+	* GeneralSettings.qml: Remove rectangle that filled height
+
+	* ShortcutSettings.qml: Add property "invalids" and new functionality for
+	applyButton: now changes icon and tooltip when there are invalid shortcuts.
+
+	* ShortcutSettings.qml: Fix bug where setting 3 shortcuts to the same value
+	and changing one back would not mark the third as unique
+
+	* ApplyAction.qml: Add tooltip

@@ -35,4 +35,5 @@ TabViewStyle {
     frame: Rectangle {
         color: colours.base
     }
+    frameOverlap: 0
 }

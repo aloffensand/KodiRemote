@@ -40,7 +40,7 @@ Tab {
                 top: parent.top
                 left: parent.left
                 right: parent.right
-                margins: marginVal
+                margins: margins
             }
         }
 
@@ -52,7 +52,7 @@ Tab {
                 right: parent.right
                 leftMargin: 1
                 rightMargin: 1
-                topMargin: marginVal
+                topMargin: margins
             }
             //height: rowHeight
         }
@@ -64,7 +64,7 @@ Tab {
                 left: parent.left
                 right: parent.right
                 bottom: parent.bottom
-                margins: marginVal
+                margins: margins
             }
         }
     }

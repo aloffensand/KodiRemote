@@ -5,8 +5,6 @@ import QtQuick.Layouts 1.1
 
 GridLayout {
     columns: 3
-    anchors.fill: parent
-    anchors.margins: parent.height / 20
 
     ApplyAction {
         id: applyAction
@@ -19,21 +17,21 @@ GridLayout {
     }
     BackAction { id: backAction }
 
-    Label { text: 'Host: ' }
+    Label { text: 'Host: '; Layout.alignment: labelAlignment }
     TextField {
         id: hostText
         Layout.columnSpan: 2
         Layout.fillWidth: true
         text: hostname
     }
-    Label { text: 'Port: ' }
+    Label { text: 'Port: '; Layout.alignment: labelAlignment }
     TextField {
         id: portText
         Layout.columnSpan: 2
         text: port
     }
 
-    Label { text: 'Loglevel: ' }
+    Label { text: 'Loglevel: '; Layout.alignment: labelAlignment }
     ComboBox {
         id: loglevelBox
         //tooltip: 'How much information should be shown'
@@ -43,13 +41,6 @@ GridLayout {
         Layout.columnSpan: 2
     }
 
-    // makes sure all other elements are aligned at the top
-    Rectangle {
-        Layout.fillHeight: true
-        Layout.columnSpan: 3
-        color: "transparent"
-    }
-    Button { action: backAction }
-    Label { text: ' ' }
+    Label { text: ' '; Layout.columnSpan: 2 }
     Button { action: applyAction; Layout.alignment: Qt.AlignRight }
 }

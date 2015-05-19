@@ -15,6 +15,8 @@ Window {
         colorGroup: SystemPalette.Active
     }
 
+    property int margins: 10
+    property int labelAlignment: Qt.AlignRight
     property string hostname: 'morgoth'
     property string port: '8080'
     property string xbmcUrl: 'http://' + hostname + ':' + port + '/jsonrpc'

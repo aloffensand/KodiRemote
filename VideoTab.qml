@@ -8,7 +8,7 @@ Tab {
     Rectangle {
         anchors {
             fill: parent
-            margins: 8
+            margins: margins
         }
         color: "transparent"
 
