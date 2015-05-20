@@ -60,11 +60,12 @@ GridLayout {
             log('notice', 'Attempted to remove nonexistant shortcut.')
         } else {
             var itemList = newShortcuts[shortcut]
+            // Not much to do if it was the only shortcut
             if (itemList.length == 1 && itemList[0] == arrayIndex) {
                 newShortcuts[shortcut] = null
             } else if (itemList.length == 1) {
                 log('notice', 'Attempted to remove nonexistant item.')
-            // more than one item in the list
+            // more than one item in the list == duplicate shortcuts
             } else {
                 var newList = []
                 for (var i=0; i < itemList.length; i++) {

@@ -123,3 +123,15 @@
 	and changing one back would not mark the third as unique
 
 	* ApplyAction.qml: Add tooltip
+
+	* MyTabViewStyle.qml: Add frameOverlap
+
+2015-05-19  Aina Lea Offensand
+	* Icon.qml: Set activeFocusOnTab to false
+
+	* ShortcutSettings.qml: Small change to documentation
+
+	* ShortcutTextField.qml: Add Timer to update the Icon next to the TextField
+	when the TextField has focus and is not changed for a while
+
+	* SettingsTab.qml: Add tooltip to tabButtons

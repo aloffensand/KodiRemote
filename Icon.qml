@@ -7,6 +7,7 @@ Button {
     iconName: ''
     iconSource: iconName == '' ? '' : 'icons/' + iconName + '.png'
     tooltip: ''
+    activeFocusOnTab: false
 
     style: ButtonStyle {
         background: Image {

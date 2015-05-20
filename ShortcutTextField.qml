@@ -12,11 +12,28 @@ Rectangle {
     property string shortcut: frame[target]
     property string oldShortcut: frame[target]
 
+    Timer {
+        id: updateTimer
+        interval: 3000
+        onTriggered: {
+            if (textField.focus) {
+                shortcutSettings.changeShortcut(
+                    textField.text, oldShortcut, arrayIndex
+                )
+            }
+        }
+    }
+
     TextField {
         id: textField
         text: parent.shortcut
         onEditingFinished: {
             shortcutSettings.changeShortcut(text, oldShortcut, arrayIndex)
+        }
+        onTextChanged: {
+            if (focus) {
+                updateTimer.restart()
+            }
         }
     }
 

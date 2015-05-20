@@ -31,6 +31,7 @@ Tab {
                         }
                     }
                     iconSource: 'icons/' + iconName + '.png'
+                    tooltip: text
 
                     onClicked: settingsTabView.currentIndex = index
                 }
