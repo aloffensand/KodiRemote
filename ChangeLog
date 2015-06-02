@@ -135,3 +135,16 @@
 	when the TextField has focus and is not changed for a while
 
 	* SettingsTab.qml: Add tooltip to tabButtons
+
+2015-06-02  Aina Lea Offensand
+	* ShortcutSettings.qml: Change ApplyButton tooltip
+	
+	* ShortcutTextField.qml: Change Timer interval
+
+	* MyTabViewStyle: Change optics
+
+	* SettingsTab.qml: Add VideoSettings and SkipIntroSettings
+
+	* VideoSettings.qml: New File
+
+	* SkipIntroSettings.qml: New File

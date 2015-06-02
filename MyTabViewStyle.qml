@@ -16,7 +16,9 @@ TabViewStyle {
                colours.window
         implicitHeight: text.height + 4
         implicitWidth: Math.max(text.width + 13, 50)
-        radius: 4
+        radius: 2
+        border.width: 1
+        border.color: colours.shadow
         Label {
             id: text
             anchors.centerIn: parent
@@ -29,11 +31,18 @@ TabViewStyle {
         }
     }
     tabBar: Rectangle {
-        //color: colours.alternateBase
         color: colours.window
+        Rectangle {
+            anchors {
+                bottom: parent.bottom
+                left: parent.left; right: parent.right
+            }
+            height: 1
+            color: colours.windowText
+        }
     }
     frame: Rectangle {
-        color: colours.base
+        color: colours.window
     }
     frameOverlap: 0
 }

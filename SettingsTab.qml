@@ -94,6 +94,42 @@ Tab {
                     }
                 }
             }
+            Tab {
+                id: videoSettingsTab
+                title: 'Video'
+                property string iconName: 'applications-multimedia'
+                ScrollView {
+                    anchors.fill: parent
+                    Rectangle {
+                        width: childrenRect.width + margins*2
+                        height: childrenRect.height + margins*2
+                        color: "transparent"
+                        VideoSettings {
+                            id: videoSettings
+                            x: margins
+                            y: margins
+                        }
+                    }
+                }
+            }
+            Tab {
+                id: skipIntroSettingsTab
+                title: 'SkipIntro'
+                property string iconName: ''
+                ScrollView {
+                    anchors.fill: parent
+                    Rectangle {
+                        width: childrenRect.width + margins*2
+                        height: childrenRect.height + margins*2
+                        color: "transparent"
+                        SkipIntroSettings {
+                            id: skipIntroSettings
+                            x: margins
+                            y: margins
+                        }
+                    }
+                }
+            }
         }
     }
 }

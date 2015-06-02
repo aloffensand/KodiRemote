@@ -184,7 +184,7 @@ GridLayout {
             PropertyChanges {
                 target: applyButton
                 iconName: 'dialog-warning'
-                tooltip: 'Apply valid changes, invalid shortcuts will be set to null.'
+                tooltip: 'Apply valid changes, invalid shortcuts will be unset.'
             }
         }
     }

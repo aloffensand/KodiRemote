@@ -14,7 +14,7 @@ Rectangle {
 
     Timer {
         id: updateTimer
-        interval: 3000
+        interval: 2000
         onTriggered: {
             if (textField.focus) {
                 shortcutSettings.changeShortcut(

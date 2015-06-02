@@ -5,21 +5,18 @@ Items grow out of the visible area when the mainTab gets too small
 connectionBox and messageBox overlap with items
 Commandline options?
 
-Add multimedia keys for player controls and enter for select
-    Apparently, you cannot define several shortcuts for one action …
-    I could say that everything has two shortcuts, then I'd just need to create
-    another action that has the same function and a different shortcut.
+Find out which shortcuts have what string (multimedia keys?)
 It would be nice to have a "stop library scan" instead of that warning …
-Use jsonrpc notifications instead of actively asking for everything
 Skip intro: while watching a series, you can say how long the intro is (or
     press "intro started" and "intro stopped" while watching an episode). Then
     you can press a button when the intro starts to jump that far ahead.
-Progress bar: use a progress bar with a triangle over/under it to skip through
-    a video. When moving the triangle, it shows the editable time where you
-    would jump. Jump by pressing a button. Make that triangle splittable to
-    repeat a scene.
-ProgressRect: the textfield is in the mousearea and can't be selected by
-    clicking
+ProgressBar: Make triangle splittable
+Settings for videos (kodi does not always start a video with the selected
+    settings, especially regarding subtitles. It would be nice if the remote
+    could do so instead [settings the subtitles to "eng"/"english" if possible
+    and than restarting the video to ensure they are shown from the start]
+Fix fixed colours (notification background etc)
+In SettingsTab, show which Tab is currently active
 
 Bugs:
 When I switch off my wifi device, I get a
@@ -31,7 +28,6 @@ When I switch off my wifi device, I get a
     Strangely, building a try-catch around curl.onreadystatechange or curl.send
     doesn't solve the problem though. Several other try-catches do nothing,
 too…
-
 When I cap the connection via kNetworkManager's Disable Wireless, it doesn't
     show "connection lost". If I open the remote AFTER disabling wireless, it
     works as expected. 
