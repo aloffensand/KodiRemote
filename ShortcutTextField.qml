@@ -11,6 +11,7 @@ Rectangle {
     property string target: ''
     property string shortcut: frame[target]
     property string oldShortcut: frame[target]
+    property alias text: textField.text
 
     Timer {
         id: updateTimer
@@ -33,6 +34,11 @@ Rectangle {
         onTextChanged: {
             if (focus) {
                 updateTimer.restart()
+            }
+        }
+        onFocusChanged: {
+            if (focus) {
+                shortcutSettings.lastFocus = arrayIndex
             }
         }
     }

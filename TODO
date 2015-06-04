@@ -1,6 +1,5 @@
 
 
-Use jsonRPC's notifications instead of polling for information
 Items grow out of the visible area when the mainTab gets too small
 connectionBox and messageBox overlap with items
 Commandline options?
@@ -11,12 +10,7 @@ Skip intro: while watching a series, you can say how long the intro is (or
     press "intro started" and "intro stopped" while watching an episode). Then
     you can press a button when the intro starts to jump that far ahead.
 ProgressBar: Make triangle splittable
-Settings for videos (kodi does not always start a video with the selected
-    settings, especially regarding subtitles. It would be nice if the remote
-    could do so instead [settings the subtitles to "eng"/"english" if possible
-    and than restarting the video to ensure they are shown from the start]
 Fix fixed colours (notification background etc)
-In SettingsTab, show which Tab is currently active
 
 Bugs:
 When I switch off my wifi device, I get a

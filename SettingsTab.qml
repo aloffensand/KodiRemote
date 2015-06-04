@@ -16,6 +16,7 @@ Tab {
             Repeater {
                 model: settingsTabView.count
                 ToolButton {
+                    id: tabButton
                     text: {
                         if (settingsTabView.getTab(index).title == null) {
                             'Untitled'
@@ -32,7 +33,20 @@ Tab {
                     }
                     iconSource: 'icons/' + iconName + '.png'
                     tooltip: text
-
+                    checkable: true
+                    states: [
+                        State {
+                            when: settingsTabView.currentIndex == index
+                            PropertyChanges {
+                                target: tabButton; checked: true
+                            }
+                        }, State {
+                            when: settingsTabView.currentIndex != index
+                            PropertyChanges {
+                                target: tabButton; checked: false
+                            }
+                        }
+                    ]
                     onClicked: settingsTabView.currentIndex = index
                 }
             }

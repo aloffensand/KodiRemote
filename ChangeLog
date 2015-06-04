@@ -148,3 +148,35 @@
 	* VideoSettings.qml: New File
 
 	* SkipIntroSettings.qml: New File
+
+2015-06-02  Aina Lea Offensand
+	* main.qml: Add WebSocket and react to notifications
+
+	* ChoosePlayerRow.qml, MainTab.qml: Remove playeridBox from updateTimer,
+	update playeridBox whenever the webSocket receives a Player.OnPlay/OnStop
+
+	* PlayerControls.qml: Minor code cleanup:
+	  - Add hours, minutes, seconds and currentTimeText to main item
+	  - Add function seek(timeString)
+	  - Add function setSubtitleToIndex(index)
+	  - audioStreamBox, subtitleBox: Add functions getCurrentLanguage(),
+	    indexOfLanguage(language)
+	  - audioStreamBox, subtitleBox: Use initial model ['-1: None']
+	
+	* PlayerControls.qml: Add functions initialCheck() and initialSetter() to
+	use defaultSubtitles and defaultAudioStream
+
+	* VideoSettings.qml: Add applyButton and applyAction
+
+	* PlayerControls.qml: Change previousAction and nextAction's icon and
+	tooltip
+
+	* ShortcutSettings.qml: Add functionality to applyButton (oops)
+
+	* ShortcutSettings.qml: Whenever a valid shortcut is entered, change the
+	shorcut text to qml's representation of it
+
+	* ShortcutSettings.qml, ShortcutTextField.qml: When the applyButton is
+	pressed, update the textField that last had focus
+
+	* SettingsTab.qml: Shows which subtab is currently active (checked)

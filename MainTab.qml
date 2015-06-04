@@ -24,7 +24,7 @@ Tab {
             running: true
             triggeredOnStart: true
             onTriggered: {
-                choosePlayerRow.updatePlayeridBox()
+                //choosePlayerRow.updatePlayeridBox()
                 playerControls.optionalTimer()
             }
         }

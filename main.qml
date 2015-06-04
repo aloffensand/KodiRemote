@@ -2,6 +2,7 @@ import QtQuick 2.1
 import QtQuick.Controls 1.1
 import QtQuick.Window 2.0
 import Qt.labs.settings 1.0
+import Qt.WebSockets 1.0
 
 Window {
     id: frame
@@ -18,8 +19,9 @@ Window {
     property int margins: 10
     property int labelAlignment: Qt.AlignRight
     property string hostname: 'morgoth'
-    property string port: '8080'
-    property string xbmcUrl: 'http://' + hostname + ':' + port + '/jsonrpc'
+    property string port: '9090'
+    property string kodiUrl: 'ws://' + hostname + ':' + port + '/jsonrpc'
+    property string xbmcUrl: 'http://' + hostname + ':8080/jsonrpc'
     property bool connected: false
     property string loglevel: 'notice'
 
@@ -33,6 +35,8 @@ Window {
         'info': 6,
         'debug': 7
     }
+
+    property var notificationMap: {'notification': ['functions']}
 
     property string shortcut_left: 'Left'
     property string shortcut_left1: ''
@@ -68,6 +72,9 @@ Window {
     property string shortcut_osd1: ''
     property string shortcut_playpauseselect: ''
     property string shortcut_playpauseselect1: ''
+
+    property string defaultAudio: ''
+    property string defaultSubtitles: ''
 
     Settings {
         category: 'Window'
@@ -119,6 +126,62 @@ Window {
         property alias playpauseselect: frame.shortcut_playpauseselect
         property alias playpauseselect1: frame.shortcut_playpauseselect1
     }
+    Settings {
+        category: 'Video'
+        property alias defaultAudio: frame.defaultAudio
+        property alias defaultSubtitles: frame.defaultSubtitles
+    }
+
+    WebSocket {
+        id: webSocket
+        url: kodiUrl
+        active: true
+
+        onStatusChanged: {
+            if (status == WebSocket.Open) {
+                connected = true
+            } else if (status == WebSocket.Closed) {
+                connected = false
+            } else if (status == WebSocket.Error) {
+                log('error', 'Connection Error')
+            }
+        }
+        onErrorStringChanged: {
+            if (errorString != '') {
+                log('error', 'Error: ' + errorString)
+            }
+        }
+        onTextMessageReceived: {
+            //log('debug', message)
+            var jsonObj = eval('(' + message + ')')
+            // Handle notifications
+            if (jsonObj.method != null) {
+                log('debug', jsonObj.method)
+                if (dictContainsKey(notificationMap, jsonObj.method)) {
+                    var functions = notificationMap[jsonObj.method]
+                    for (var i=0; i < functions.length; i++) {
+                        functions[i](jsonObj.params)
+                    }
+                }
+            }
+        }
+    }
+
+    function dictContainsKey(dict, key) {
+        return Object.keys(dict).indexOf(key) != -1 && dict[key] != null
+    }
+
+    function addNotificationFunction(notification, functn) {
+        if (dictContainsKey(notificationMap, notification)) {
+            notificationMap[notification].push(functn)
+        } else {
+            notificationMap[notification] = [functn]
+        }
+    }
+
+    //FIXME: add function.
+    function removeNotificationFunction(notification, functn) {
+    }
 
     function sendCommand(methodString, paramsString) {
         requestData(methodString, paramsString, null)
@@ -157,7 +220,7 @@ Window {
 
     function getResponse(method, method_short, jsonObj, setterMethod) {
         if (jsonObj.error != null) {
-            if ( ! expectedError(method, method_short, jsonObj.error)) {
+            //if ( ! expectedError(method, method_short, jsonObj.error)) {
                 logToConsole('error', 
                     'Error processing request:\n\t' + method + '\n\t' +
                     jsonObj.error.code + ': ' +
@@ -165,7 +228,7 @@ Window {
                     jsonObj.error.data + ')'
                 )
                 logToBox('error', 'Error sending ' + method_short)
-            }
+            //}
         } else if (setterMethod != null) {
             setterMethod(jsonObj)
         }

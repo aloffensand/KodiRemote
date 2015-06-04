@@ -9,11 +9,16 @@ Rectangle {
     property int playerid: mainRec.playerid
     property string playertype: mainRec.playertype
     property bool playing: (playertype != 'none')
+    property int hours: 0
+    property int minutes: 0
+    property int seconds: 0
+    property string currentTimeText: hours + ':' + fillWithZeroes(minutes) + ':' + fillWithZeroes(seconds)
 
     property var updateMethods: []
 
     onPlayertypeChanged: {
         if (playertype == 'video') {
+            initialCheck()
             audioStreamBox.enabled = true
             subtitleBox.enabled = true
             updateMethods = [
@@ -21,6 +26,7 @@ Rectangle {
                 updateAudioStreamBox, updateSubtitleBox
             ]
         } else if (playertype != 'none') {
+            initialCheck()
             updateMethods = [
                 updateNowPlayingText, updateVideoTimes
             ]
@@ -59,6 +65,55 @@ Rectangle {
         var args = '{"playerid": ' + playerid +
                    ', "properties": [' + properties + ']}'
         requestData('"Player.GetProperties"', args, setterMethod)
+    }
+
+    function initialCheck() {
+        var properties = '"totaltime", "percentage", "time"'
+        //properties += ', "title"'
+        //properties += ', "episode", "season", "showtitle", "tvshowid"'
+        //properties += ', "album", "artist"'
+        if (playertype == 'video') {
+            properties += ', "audiostreams", "currentaudiostream"'
+            properties += ', "subtitles", "currentsubtitle", "subtitleenabled"'
+        }
+        requestPlayerProperties(properties, initialSetter)
+    }
+
+    function initialSetter(jsonObj) {
+        //setNowPlayingText(jsonObj)
+        setVideoTimes(jsonObj)
+        if (playertype != 'video') {
+            return
+        }
+        setAudioStreams(jsonObj)
+        setSubtitles(jsonObj)
+        // Test whether the video has just been started. More or less.
+        if (hours != 0 || minutes != 0 || seconds > 5) {
+            return
+        }
+        var reset = false
+        if (defaultAudio != '') {
+            var currentAudio = audioStreamBox.getCurrentLanguage()
+            if (currentAudio != defaultAudio && audioStreamBox.indexOfLanguage(defaultAudio) != -2) {
+                var newIndex = audioStreamBox.indexOfLanguage(defaultAudio)
+                var args = '{"playerid": ' + playerid +
+                           ', "stream": ' + newIndex + '}'
+                sendCommand('"Player.SetAudioStream"', args)
+                reset = true
+            }
+        }
+        if (defaultSubtitles != '') {
+            var currentSubs = subtitleBox.getCurrentLanguage()
+            if (currentSubs != defaultSubtitles && subtitleBox.indexOfLanguage(defaultSubtitles) != -2) {
+                var newIndex = subtitleBox.indexOfLanguage(defaultSubtitles)
+                setSubtitleToIndex(newIndex)
+                reset = true
+            }
+        }
+        if (reset) {
+            var newTime = '0:00:00'
+            seek(newTime)
+        }
     }
 
     function setAudioStreams(jsonObj) {
@@ -146,11 +201,9 @@ Rectangle {
             rightTriangle.x = ((progressBar.value/100) * progressBar.width)
         }
 
-        var minutes = fillWithZeroes(jsonObj.result.time.minutes)
-        var seconds = fillWithZeroes(jsonObj.result.time.seconds)
-        progressText.curTime = jsonObj.result.time.hours
-        progressText.curTime += ":" + minutes + ":"
-        progressText.curTime += seconds
+        playerControls.hours = jsonObj.result.time.hours
+        playerControls.minutes = jsonObj.result.time.minutes
+        playerControls.seconds = jsonObj.result.time.seconds
     }
 
     function updateVideoTimes() {
@@ -189,6 +242,30 @@ Rectangle {
         requestData('"Player.GetItem"', args, setNowPlayingText)
     }
 
+    function setSubtitleToIndex(index) {
+        if (index != -1) {
+            var args = '{"playerid": ' + playerid +
+                       ', "subtitle": ' + index +
+                       ', "enable": true}'
+        } else {
+            args = '{"playerid": ' + playerid +
+                   ', "subtitle": "off"}'
+        }
+        sendCommand('"Player.SetSubtitle"', args)
+    }
+
+    function seek(timeString) {
+        var newTime = timeString.split(':')
+        // parseInt to strip leading zeroes, kodi can't handle those …
+        var args = '{"playerid": ' + playerid +
+                   ', "value": ' + 
+                   '{ "hours": ' + parseInt(newTime[0], 10) +
+                   ', "minutes": ' + parseInt(newTime[1], 10) +
+                   ', "seconds": ' + parseInt(newTime[2], 10) + '}}'
+        sendCommand('"Player.Seek"', args)
+        updateVideoTimes()
+    }
+
     PlayerControlAction {
         id: playPauseAction
         description: 'Play/Pause'
@@ -214,8 +291,8 @@ Rectangle {
     SecondShortcutAction { mainAction: stopAction }
     PlayerControlAction {
         id: nextAction
-        description: 'Next'
-        iconName: 'go-next'
+        description: 'Next item or chapter'
+        iconName: 'media-skip-forward'
         shortcut: shortcut_next
         shortcut1: shortcut_next1
         onTriggered: {
@@ -228,8 +305,8 @@ Rectangle {
     SecondShortcutAction { mainAction: nextAction }
     PlayerControlAction {
         id: previousAction
-        description: 'Previous'
-        iconName: 'go-previous'
+        description: 'Previous item or chapter'
+        iconName: 'media-skip-backward'
         shortcut: shortcut_previous
         shortcut1: shortcut_previous1
         onTriggered: {
@@ -252,7 +329,7 @@ Rectangle {
         }
     }
     SecondShortcutAction { mainAction: showOsdAction }
-    PlayerControlAction {
+    ControlAction {
         id: playpauseselectAction
         description: 'If there is an active player, this will act as PlayPause; else, it will be Select.'
         shortcut: shortcut_playpauseselect
@@ -299,7 +376,7 @@ Rectangle {
             ComboBox {
                 id: audioStreamBox
                 width: 200
-                model: []
+                model: ['-1: None']
                 onHoveredChanged: {
                     if (hovered) {
                         updateAudioStreamBox()
@@ -311,6 +388,18 @@ Rectangle {
                                ', "stream": ' + streamIndex + '}'
                     sendCommand('"Player.SetAudioStream"', args)
                 }
+                function getCurrentLanguage() {
+                    var currentItem = model[currentIndex]
+                    return currentItem.split(': ')[1]
+                }
+                function indexOfLanguage(language) {
+                    for (var i=0; i<model.length; i++) {
+                        if (model[i].split(': ')[1] == language) {
+                            return i-1
+                        }
+                    }
+                    return -2
+                }
             }
             Label {
                 text: 'Subtitles:   '
@@ -318,7 +407,7 @@ Rectangle {
             ComboBox {
                 id: subtitleBox
                 width: 200
-                model: []
+                model: ['-1: None']
                 onHoveredChanged: {
                     if (hovered) {
                         updateSubtitleBox()
@@ -326,15 +415,19 @@ Rectangle {
                 }
                 onActivated: {
                     var subIndex = model[index].split(':')[0]
-                    if (subIndex != -1) {
-                        var args = '{"playerid": ' + playerid +
-                                   ', "subtitle": ' + subIndex +
-                                   ', "enable": true}'
-                    } else {
-                        args = '{"playerid": ' + playerid +
-                               ', "subtitle": "off"}'
+                    setSubtitleToIndex(subIndex)
+                }
+                function getCurrentLanguage() {
+                    var currentItem = model[currentIndex]
+                    return currentItem.split(': ')[1]
+                }
+                function indexOfLanguage(language) {
+                    for (var i=0; i<model.length; i++) {
+                        if (model[i].split(': ')[1] == language) {
+                            return i-1
+                        }
                     }
-                    sendCommand('"Player.SetSubtitle"', args)
+                    return -2
                 }
             }
         }
@@ -453,13 +546,7 @@ Rectangle {
                     }
                     onClicked: {
                         var newTime = progressBar.getTime(mouse.x/width*100)
-                        var args = '{"playerid": ' + playerid +
-                                   ', "value": ' + 
-                                   '{ "hours": ' + newTime[0] +
-                                   ', "minutes": ' + newTime[1] +
-                                   ', "seconds": ' + newTime[2] + '}}'
-                        sendCommand('"Player.Seek"', args)
-                        updateVideoTimes()
+                        seek(newTime[0] + ':' + newTime[1] + ':' + newTime[2])
                     }
                 }
 
@@ -486,7 +573,7 @@ Rectangle {
                 Label {
                     id: progressText
                     y: (progressBar.height-progressText.height) / 2 
-                    property string curTime: '0:00:00'
+                    property string curTime: currentTimeText
                     property string curLength: '0:00:00'
                     text: curTime + ' / ' + curLength
                 }
@@ -496,14 +583,7 @@ Rectangle {
                     y: progressBar.height + 8
                     text: 'Jump'
                     onClicked: {
-                        var newTime = jumpToText.text.split(':')
-                        // parseInt to strip leading zeroes, kodi can't handle those …
-                        var args = '{"playerid": ' + playerid +
-                                   ', "value": ' + 
-                                   '{ "hours": ' + parseInt(newTime[0], 10) +
-                                   ', "minutes": ' + parseInt(newTime[1], 10) +
-                                   ', "seconds": ' + parseInt(newTime[2], 10) + '}}'
-                        sendCommand('"Player.Seek"', args)
+                        seek(jumpToText.text)
                     }
                 }
                 //Button {

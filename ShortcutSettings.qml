@@ -6,6 +6,7 @@ GridLayout {
     id: shortcutSettings
     columns: 3
 
+    property int lastFocus: 0
     property var shortcutTextFields: [
         leftText, leftText1, rightText, rightText1,
         upText, upText1, downText, downText1,
@@ -52,6 +53,9 @@ GridLayout {
             addShortcut(newShortcut, arrayIndex)
         }
         item.oldShortcut = newShortcut
+        if (item.valid && item.unique) {
+            item.shortcut = newShortcut
+        }
     }
 
     function removeShortcut(shortcut, arrayIndex) {
@@ -99,7 +103,17 @@ GridLayout {
         }
     }
 
-    function updateAllValid() {
+    function saveAllValid() {
+        console.log('er')
+        for (var i=0; i<shortcutTextFields.length; i++) {
+            var item = shortcutTextFields[i]
+            if (item.valid && item.unique) {
+                if (frame[item.target] != item.shortcut) {
+                    log('debug', 'Changed shortcut "' + item.target + '" to "' + item.shortcut + '"')
+                    frame[item.target] = item.shortcut
+                }
+            }
+        }
     }
 
     Component.onCompleted: {
@@ -115,6 +129,11 @@ GridLayout {
 
     ApplyAction {
         id: applyAction
+        onTriggered: {
+            var item = shortcutTextFields[lastFocus]
+            changeShortcut(item.text, item.oldShortcut, lastFocus)
+            saveAllValid()
+        }
     }
 
     BackAction { id: backAction }
@@ -187,5 +206,6 @@ GridLayout {
                 tooltip: 'Apply valid changes, invalid shortcuts will be unset.'
             }
         }
+        onClicked: applyAction.trigger()
     }
 }

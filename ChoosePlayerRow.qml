@@ -4,6 +4,12 @@ import QtQuick.Controls 1.1
 Row {
     width: parent.width
 
+    Component.onCompleted: {
+        updatePlayeridBox('')
+        addNotificationFunction('Player.OnPlay', updatePlayeridBox)
+        addNotificationFunction('Player.OnStop', updatePlayeridBox)
+    }
+
     function setActivePlayerList(jsonObj) {
         var newList = [ '-1: none' ]
         var players = jsonObj.result
@@ -23,7 +29,7 @@ Row {
         }
     }
 
-    function updatePlayeridBox() {
+    function updatePlayeridBox(params) {
         requestData('"Player.GetActivePlayers"', '{}', setActivePlayerList)
     }
 
