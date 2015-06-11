@@ -60,7 +60,7 @@ Rectangle {
             sendCommand('"input.left"', '{}')
         }
     }
-    SecondShortcutAction { mainAction: downAction }
+    SecondShortcutAction { mainAction: leftAction }
     ControlAction {
         id: rightAction
         description: 'Right'

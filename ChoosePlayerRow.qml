@@ -6,9 +6,9 @@ Row {
     width: parent.width
 
     Component.onCompleted: {
-        updatePlayeridBox('')
         addNotificationFunction('Player.OnPlay', updatePlayeridBox)
         addNotificationFunction('Player.OnStop', updatePlayeridBox)
+        addNotificationFunction('Internal.OnConnectionEstablished', updatePlayeridBox)
     }
 
     function setActivePlayerList(jsonObj) {

@@ -190,3 +190,21 @@
 	Minor code cleanup.
 
 	* SettingsTab.qml: Change the VideoSettings icon
+
+2015-06-11  Aina Lea Offensand
+	* GeneralControls: Bugfix: The SecondShortcutAction for leftAction was set
+	to downAction
+
+	* main.qml: Add function emulateNotification and notifictions
+	Internal.OnConnectionEstablished and Internal.OnConnectionLost
+
+	* ChoosePlayerRow.qml: updatePlayeridBox on
+	Internal.OnConnectionEstablished
+
+	* main.qml: Use webSocket instead of HttpRequests (for everything). For
+	that, add vars awaitingResponse, usableIds and highestId; expand
+	webSocket.onTextMessageReceived; rewrite requestData (renamed to
+	sendRequest); adapt getResponse
+
+	* main.qml (webSocket.onTextMessageReceived): Use id to identify
+	notifications and responses
