@@ -6,6 +6,10 @@ Tab {
     id: mainTab
     title: 'Main Controls'
 
+    // Just a container for it's elements
+    // GeneralControls, ChoosePlayerRow and PlayerControls.
+    // Ensures they can exchange the necessary information
+    // (mainly playerid and playertype)
     Rectangle {
         id: mainRec
         anchors.fill: parent
@@ -17,6 +21,7 @@ Tab {
         property int playerid: -1
         property string playertype: 'none'
 
+        // Poll for information every <interval> milliseconds
         Timer {
             id: updateTimer
             interval: 1000

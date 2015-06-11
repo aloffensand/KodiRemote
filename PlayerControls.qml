@@ -14,6 +14,7 @@ Rectangle {
     property int seconds: 0
     property string currentTimeText: hours + ':' + fillWithZeroes(minutes) + ':' + fillWithZeroes(seconds)
 
+    // Which methods to call when polling for new information.
     property var updateMethods: []
 
     onPlayertypeChanged: {
@@ -37,6 +38,7 @@ Rectangle {
         }
     }
 
+    // Polling method
     function optionalTimer() {
         for (var i=0; i<updateMethods.length; i++) {
             updateMethods[i]()
@@ -67,6 +69,7 @@ Rectangle {
         requestData('"Player.GetProperties"', args, setterMethod)
     }
 
+    // Called whenever a new player is started
     function initialCheck() {
         var properties = '"totaltime", "percentage", "time"'
         //properties += ', "title"'
@@ -79,9 +82,11 @@ Rectangle {
         requestPlayerProperties(properties, initialSetter)
     }
 
+    // Called whenever information about a new player is received
     function initialSetter(jsonObj) {
         //setNowPlayingText(jsonObj)
         setVideoTimes(jsonObj)
+        // Everything that follows is about audioStreams and subtitles.
         if (playertype != 'video') {
             return
         }
@@ -91,6 +96,8 @@ Rectangle {
         if (hours != 0 || minutes != 0 || seconds > 5) {
             return
         }
+        // Change to the locally set defaults.
+        // reset: Should we seek back to 0:00:00?
         var reset = false
         if (defaultAudio != '') {
             var currentAudio = audioStreamBox.getCurrentLanguage()
@@ -111,8 +118,7 @@ Rectangle {
             }
         }
         if (reset) {
-            var newTime = '0:00:00'
-            seek(newTime)
+            seek('0:00:00')
         }
     }
 
@@ -181,6 +187,7 @@ Rectangle {
     }
 
     function setVideoTimes(jsonObj) {
+        // Handle length
         var minutes = fillWithZeroes(jsonObj.result.totaltime.minutes)
         var seconds = fillWithZeroes(jsonObj.result.totaltime.seconds)
         var length = jsonObj.result.totaltime.seconds
@@ -192,7 +199,6 @@ Rectangle {
         progressText.curLength += ":" + minutes
         progressText.curLength += ":" + seconds
 
-        //progressSlider.value = jsonObj.result.percentage
         progressBar.value = jsonObj.result.percentage
         if ( ! leftTriangle.editing) {
             leftTriangle.x = ((progressBar.value/100) * progressBar.width) - leftTriangle.width
@@ -213,7 +219,6 @@ Rectangle {
 
     function setNowPlayingText(jsonObj) {
         var newText = ' \n '
-        //log('debug', jsonObj.result.item.type)
         if (jsonObj.result.item.type == 'episode') {
             var season = fillWithZeroes(jsonObj.result.item.season)
             var episode = fillWithZeroes(jsonObj.result.item.episode)
@@ -228,6 +233,7 @@ Rectangle {
                       '\n' + jsonObj.result.item.title
         } else {
             newText = jsonObj.result.item.title + '\n'
+            log('debug', jsonObj.result.item.type)
         }
         nowPlayingText.text = newText
     }

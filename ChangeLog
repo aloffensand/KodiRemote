@@ -180,3 +180,13 @@
 	pressed, update the textField that last had focus
 
 	* SettingsTab.qml: Shows which subtab is currently active (checked)
+
+2015-06-11  Aina Lea Offensand
+	* ControlAction.qml, PlayerControlAction.qml, SecondShortcutAction.qml,
+	Triangle.qml, main.qml, MainTab.qml, PlayerControls.qml,
+	ChoosePlayerRow.qml, SettingsTab.qml: Add some comments
+
+	* PlayerControls.qml (initialSetter, setVideoTimes, setNowPlayingText):
+	Minor code cleanup.
+
+	* SettingsTab.qml: Change the VideoSettings icon

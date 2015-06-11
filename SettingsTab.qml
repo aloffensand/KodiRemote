@@ -11,6 +11,7 @@ Tab {
         spacing: 1
 
         Column {
+            // It's a Tab! I mean … a tab bar.
             id: tabSelection
 
             Repeater {
@@ -93,7 +94,6 @@ Tab {
                 id: shortcutSettingsTab
                 title: 'Shortcuts'
                 property string iconName: 'preferences-desktop-keyboard'
-                //property string iconName: 'configure-shortcuts'
                 ScrollView {
                     anchors.fill: parent
                     Rectangle {

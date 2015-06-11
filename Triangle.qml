@@ -1,5 +1,7 @@
 import QtQuick 2.2
 
+// A triangle with a base color and a borderColor for which you can set all
+// three points. It points staight up by default.
 Canvas {
     id: triangle
     property color borderColor: "black"

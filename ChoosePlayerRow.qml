@@ -1,6 +1,7 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.1
 
+// A ComboBox to choose which player to send controls to and some visual stuff.
 Row {
     width: parent.width
 
@@ -49,6 +50,7 @@ Row {
         onHoveredChanged: {
             updatePlayeridBox()
         }
+        // Update playerid and playertype if they have changed.
         onCurrentIndexChanged: {
             if (model[currentIndex] == null) {
                 return

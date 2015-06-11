@@ -13,7 +13,13 @@ Window {
 
     SystemPalette {
         id: systemPalette
-        colorGroup: SystemPalette.Active
+        colorGroup: {
+            if (Qt.application.state == Qt.ApplicationActive) {
+                SystemPalette.Active
+            } else {
+                SystemPalette.Inactive
+            }
+        }
     }
 
     property int margins: 10
@@ -36,8 +42,10 @@ Window {
         'debug': 7
     }
 
+    // Maps which functions should be executed when a notification is received.
     property var notificationMap: {'notification': ['functions']}
 
+    // Customisable shortcuts
     property string shortcut_left: 'Left'
     property string shortcut_left1: ''
     property string shortcut_right: 'Right'
@@ -73,6 +81,7 @@ Window {
     property string shortcut_playpauseselect: ''
     property string shortcut_playpauseselect1: ''
 
+    // Which audio/subtitles to use when a video is started
     property string defaultAudio: ''
     property string defaultSubtitles: ''
 
@@ -171,6 +180,7 @@ Window {
         return Object.keys(dict).indexOf(key) != -1 && dict[key] != null
     }
 
+    // Add a function to call when a specific notification is received
     function addNotificationFunction(notification, functn) {
         if (dictContainsKey(notificationMap, notification)) {
             notificationMap[notification].push(functn)
@@ -180,13 +190,20 @@ Window {
     }
 
     //FIXME: add function.
+    // Remove a function from the functions to call when a specific
+    // notification is received.
     function removeNotificationFunction(notification, functn) {
     }
 
+    // Send a command to kodi that does not expect an answer.
+    // example: sendCommand('"Input.Up"', '{}')
     function sendCommand(methodString, paramsString) {
         requestData(methodString, paramsString, null)
     }
 
+    // Send a command to kodi that expects an answer, call setterMethod when
+    // the response is received.
+    // (Call getResponse which then calls setterMethod)
     function requestData(methodString, paramsString, setterMethod) {
         var curl = new XMLHttpRequest();
         var method = '"method": ' + methodString + ', ' +
@@ -218,6 +235,8 @@ Window {
         curl.send(data)
     }
 
+    // When a response is received, check whether it's an error. If not, call
+    // the setterMethod (if given).
     function getResponse(method, method_short, jsonObj, setterMethod) {
         if (jsonObj.error != null) {
             //if ( ! expectedError(method, method_short, jsonObj.error)) {
@@ -229,6 +248,7 @@ Window {
                 )
                 logToBox('error', 'Error sending ' + method_short)
             //}
+        // setterMethod is null if no response was expected
         } else if (setterMethod != null) {
             setterMethod(jsonObj)
         }
@@ -260,6 +280,7 @@ Window {
         }
     }
 
+    // Logs to messageBox.
     function logToBox(level, message) {
         if (loglevels[level] <= loglevels[loglevel]) {
             var messageText = message
@@ -275,6 +296,8 @@ Window {
         }
     }
 
+    // Update connectionBox when the connection changes and log it to console
+    // with the current time.
     onConnectedChanged: {
         if (connected) {
             logToConsole('debug', 
@@ -441,6 +464,7 @@ Window {
             }
         }
 
+        // Hide the messageBox after <interval> milliseconds.
         Timer {
             id: messageTimer
             interval: 2500
