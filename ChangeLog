@@ -208,3 +208,17 @@
 
 	* main.qml (webSocket.onTextMessageReceived): Use id to identify
 	notifications and responses
+
+2015-10-13  Aina Lea Offensand
+	* main.qml: Fix usableIds functionality
+
+	* main.qml (sendCommand): Use sendRequest instead of requestData
+
+	* main.qml (webSocket.onStatusChanged): Log more messages
+
+	* main.qml: Add reconnectTimer to reestablish a lost connection
+
+	* PlayerControls.qml: Call updateNowPlayingText on start of a player
+	instead of with the Timer
+	
+	* PlayerControls.qml (setNowPlayingText): Log if the playertype is unknown

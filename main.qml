@@ -158,17 +158,22 @@ Window {
         active: true
 
         onStatusChanged: {
-            if (status == WebSocket.Open) {
+            if (status == WebSocket.Connecting) {
+                log('debug', 'Connecting …')
+            } else if (status == WebSocket.Open) {
                 connected = true
+            } else if (status == WebSocket.Closing) {
+                log('debug', 'About to close connection')
             } else if (status == WebSocket.Closed) {
                 connected = false
             } else if (status == WebSocket.Error) {
-                log('error', 'Connection Error')
+                log('debug', 'Connection error: ' + errorString)
             }
         }
         onErrorStringChanged: {
             if (errorString != '') {
-                log('error', 'Error: ' + errorString)
+                log('error', 'Connection Error: ' + errorString)
+                //errorString = ''
             }
         }
         onTextMessageReceived: {
@@ -187,10 +192,25 @@ Window {
                 if (jsonObj.id < highestId) {
                     var request = awaitingResponse[jsonObj.id]
                     getResponse(request[0], request[1], jsonObj, request[2])
+                    awaitingResponse[jsonObj.id] = null
+                    usableIds.push(jsonObj.id)
                 } else {
                     log('error', 'Response has an unrecognised id.')
                 }
             }
+        }
+    }
+
+    Timer {
+        id: reconnectTimer
+        interval: 4200
+        repeat: true
+        triggeredOnStart: false
+        running: ! connected
+        onTriggered: {
+            console.log("Reconnection attempt")
+            webSocket.active = false
+            webSocket.active = true
         }
     }
 
@@ -230,7 +250,7 @@ Window {
     // Send a command to kodi that does not expect an answer.
     // example: sendCommand('"Input.Up"', '{}')
     function sendCommand(methodString, paramsString) {
-        requestData(methodString, paramsString, null)
+        sendRequest(methodString, paramsString, null)
     }
 
     // Send a command to kodi that expects an answer, call setterMethod when

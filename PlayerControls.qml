@@ -23,15 +23,17 @@ Rectangle {
             audioStreamBox.enabled = true
             subtitleBox.enabled = true
             updateMethods = [
-                updateNowPlayingText, updateVideoTimes,
+                //updateNowPlayingText, updateVideoTimes,
+                updateVideoTimes,
                 updateAudioStreamBox, updateSubtitleBox
             ]
         } else if (playertype != 'none') {
             initialCheck()
             updateMethods = [
-                updateNowPlayingText, updateVideoTimes
+                //updateNowPlayingText, updateVideoTimes
+                updateVideoTimes
             ]
-        } else {
+        } else {  // if playertype is 'none'
             audioStreamBox.enabled = false
             subtitleBox.enabled = false
             updateMethods = []
@@ -80,6 +82,7 @@ Rectangle {
             properties += ', "subtitles", "currentsubtitle", "subtitleenabled"'
         }
         requestPlayerProperties(properties, initialSetter)
+        updateNowPlayingText()
     }
 
     // Called whenever information about a new player is received
@@ -233,7 +236,7 @@ Rectangle {
                       '\n' + jsonObj.result.item.title
         } else {
             newText = jsonObj.result.item.title + '\n'
-            log('debug', jsonObj.result.item.type)
+            log('debug', 'Unhandled item type: ' + jsonObj.result.item.type)
         }
         nowPlayingText.text = newText
     }
