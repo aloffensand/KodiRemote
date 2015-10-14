@@ -1,0 +1,55 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>ApplyAction.qml</file>
+    <file>BackAction.qml</file>
+    <file>ChoosePlayerRow.qml</file>
+    <file>ControlAction.qml</file>
+    <file>GeneralControls.qml</file>
+    <file>GeneralSettings.qml</file>
+    <file>Icon.qml</file>
+    <file>main.qml</file>
+    <file>MainTab.qml</file>
+    <file>MyTabViewStyle.qml</file>
+    <file>PlayerControlAction.qml</file>
+    <file>PlayerControls.qml</file>
+    <file>SecondShortcutAction.qml</file>
+    <file>SettingsTab.qml</file>
+    <file>ShortcutSettings.qml</file>
+    <file>ShortcutTextField.qml</file>
+    <file>SkipIntroSettings.qml</file>
+    <file>Triangle.qml</file>
+    <file>VideoSettings.qml</file>
+    <file>VideoTab.qml</file>
+
+    <file>icons/audio-volume-high.png</file>
+    <file>icons/audio-volume-low.png</file>
+    <file>icons/audio-volume-muted.png</file>
+    <file>icons/configure.png</file>
+    <file>icons/configure-shortcuts.png</file>
+    <file>icons/debug-execute-to-cursor.png</file>
+    <file>icons/debug-run-cursor.png</file>
+    <file>icons/dialog-error.png</file>
+    <file>icons/dialog-ok-apply.png</file>
+    <file>icons/dialog-ok.png</file>
+    <file>icons/dialog-warning.png</file>
+    <file>icons/edit-undo.png</file>
+    <file>icons/empty.png</file>
+    <file>icons/go-down.png</file>
+    <file>icons/go-home.png</file>
+    <file>icons/go-next.png</file>
+    <file>icons/go-previous.png</file>
+    <file>icons/go-up.png</file>
+    <file>icons/help-about.png</file>
+    <file>icons/key-enter.png</file>
+    <file>icons/list-add.png</file>
+    <file>icons/list-remove.png</file>
+    <file>icons/media-playback-pause.png</file>
+    <file>icons/media-playback-start.png</file>
+    <file>icons/media-playback-stop.png</file>
+    <file>icons/media-skip-backward.png</file>
+    <file>icons/media-skip-forward.png</file>
+    <file>icons/open-menu-symbolic.symbolic.png</file>
+    <file>icons/preferences-desktop-keyboard.png</file>
+    <file>icons/view-refresh.png</file>
+</qresource>
+</RCC>

@@ -1,6 +1,20 @@
 
+Dependencies:
+Qt5
+for Fedora:
+  qt5-qtwebsockets-devel
+  ??
 
-Ausführen: qmlscene main.qml
-  (qmlscene ist Teil von Qt5)
+Compilation:
+  qmake
+  make clean && make
+Installation:
+  make install
 
-Der main-Tab ist voll funktional, von den anderen funktionieren nur vom Video-Tab die Bibliotheks-Verwaltungs-Buttons.
+If you wish to install the program in your home folder, use something like
+  qmake PREFIX=~/bin
+or
+  qmake PREFIX=~/.local/bin
+instead of qmake. Just make sure the chosen location in in your $PATH.
+
+Or you can simply copy KodiRemote wherever you want.

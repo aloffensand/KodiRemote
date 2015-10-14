@@ -8,9 +8,11 @@ int main(int argc, char *argv[]) {
     app.setOrganizationName("KodiRemote");
     app.setApplicationName("KodiRemote");
 
+    Q_INIT_RESOURCE(resources);
+
     QQmlEngine engine;
     QQmlContext *objectContext = new QQmlContext(engine.rootContext());
-    QQmlComponent component(&engine, "main.qml");
+    QQmlComponent component(&engine, QUrl("qrc:/main.qml"));
     QObject *object = component.create(objectContext);
     
     return app.exec();

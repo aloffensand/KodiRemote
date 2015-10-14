@@ -1,6 +1,6 @@
 
-Fix Readme
-
+Add dependencies to Readme
+Check more reliably for the start of a new player
 Items grow out of the visible area when the mainTab gets too small
 connectionBox and messageBox overlap with items
 Commandline options?

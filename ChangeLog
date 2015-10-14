@@ -222,3 +222,16 @@
 	instead of with the Timer
 	
 	* PlayerControls.qml (setNowPlayingText): Log if the playertype is unknown
+
+2015-10-??  Aina Lea Offensand
+	* README: Fix it a bit
+
+	* resources.qrc: New file
+
+	* main.cpp: Use QResources
+
+	* main.pro: Add RESOURCES
+
+	* KodiRemote.desktop: New file
+
+	* main.pro: Add INSTALLS
