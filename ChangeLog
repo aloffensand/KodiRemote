@@ -223,7 +223,7 @@
 	
 	* PlayerControls.qml (setNowPlayingText): Log if the playertype is unknown
 
-2015-10-??  Aina Lea Offensand
+2015-10-15  Aina Lea Offensand
 	* README: Fix it a bit
 
 	* resources.qrc: New file
@@ -235,3 +235,37 @@
 	* KodiRemote.desktop: New file
 
 	* main.pro: Add INSTALLS
+
+2015-10-??  Aina Lea Offensand
+	* ControlAction, PlayerControlAction (enabled): Depends on mainTab.focus
+	instead of mainTab.activeFocus
+
+	* PlayerControls.qml: move old onPlayerTypeChanged to newPlayerStarted();
+	newPlayerStarted is called by onPlayerTypeChanged, Component.onCompleted
+	and on reception of Player.OnPlay notification
+
+	* PlayerControls.qml (audioStreamBox, subtitleBox, newPlayerStarted):
+	enabled is set outside the method
+
+	* PlayerControls.qml (progressRect, progressBarMouseArea): new property
+	enabled is used for relevant children
+
+	* MainTab.qml, ChoosePlayerRow.qml, GeneralControls.qml,
+	PlayerControls.qml, ControlAction.qml, PlayerControlAction.qml,
+	SecondShortcutAction.qml, Triangle.qml: Move to subdirectory MainTab
+
+	* VideoTab.qml: Move to subdirectory VideoTab
+
+	* SettingsTab.qml, ApplyAction.qml, BackAction.qml, GeneralSettings.qml,
+	ShortcutSettings.qml, ShortcutTextField.qml, SkipIntroSettings.qml,
+	VideoSettings.qml: Move to subdirectory SettingsTab
+
+	* resources.qrc: Reflect the changes in file location
+
+	* main.qml: import the new subdirectories
+
+	* ShortcutTextField.qml: import main directory for Icon.qml
+	
+	* main.pro: Rename to project.pro
+
+	* OtherSlider.qml, OtherSliderStyle.qml: Remove unused files

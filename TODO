@@ -1,6 +1,5 @@
 
 Add dependencies to Readme
-Check more reliably for the start of a new player
 Items grow out of the visible area when the mainTab gets too small
 connectionBox and messageBox overlap with items
 Commandline options?
@@ -11,6 +10,7 @@ Skip intro: while watching a series, you can say how long the intro is (or
     press "intro started" and "intro stopped" while watching an episode). Then
     you can press a button when the intro starts to jump that far ahead.
 ProgressBar: Make triangle splittable
+ProgressBar: Change colours if disabled
 Fix fixed colours (notification background etc)
 
 Bugs:

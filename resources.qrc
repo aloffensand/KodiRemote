@@ -1,25 +1,31 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file>ApplyAction.qml</file>
-    <file>BackAction.qml</file>
-    <file>ChoosePlayerRow.qml</file>
-    <file>ControlAction.qml</file>
-    <file>GeneralControls.qml</file>
-    <file>GeneralSettings.qml</file>
-    <file>Icon.qml</file>
     <file>main.qml</file>
-    <file>MainTab.qml</file>
+    <file>Icon.qml</file>
     <file>MyTabViewStyle.qml</file>
-    <file>PlayerControlAction.qml</file>
-    <file>PlayerControls.qml</file>
-    <file>SecondShortcutAction.qml</file>
-    <file>SettingsTab.qml</file>
-    <file>ShortcutSettings.qml</file>
-    <file>ShortcutTextField.qml</file>
-    <file>SkipIntroSettings.qml</file>
-    <file>Triangle.qml</file>
-    <file>VideoSettings.qml</file>
-    <file>VideoTab.qml</file>
+
+    <!-- Main Controls Tab -->
+    <file>MainTab/MainTab.qml</file>
+    <file>MainTab/ControlAction.qml</file>
+    <file>MainTab/SecondShortcutAction.qml</file>
+    <file>MainTab/PlayerControlAction.qml</file>
+    <file>MainTab/Triangle.qml</file>
+    <file>MainTab/GeneralControls.qml</file>
+    <file>MainTab/ChoosePlayerRow.qml</file>
+    <file>MainTab/PlayerControls.qml</file>
+
+    <!--<file alias="VideoTab.qml">VideoTab/VideoTab.qml</file>-->
+    <file>VideoTab/VideoTab.qml</file>
+
+    <file>SettingsTab/SettingsTab.qml</file>
+    <file>SettingsTab/ApplyAction.qml</file>
+    <file>SettingsTab/BackAction.qml</file>
+    <file>SettingsTab/GeneralSettings.qml</file>
+    <file>SettingsTab/ShortcutSettings.qml</file>
+    <file>SettingsTab/ShortcutTextField.qml</file>
+    <file>SettingsTab/VideoSettings.qml</file>
+    <file>SettingsTab/SkipIntroSettings.qml</file>
+
 
     <file>icons/audio-volume-high.png</file>
     <file>icons/audio-volume-low.png</file>

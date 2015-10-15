@@ -10,7 +10,7 @@ import QtQuick.Controls 1.2
 Action {
     property string description: ''
     property string shortcut1: ''
-    enabled: mainTab.activeFocus
+    enabled: mainTab.focus
     tooltip: {
         var str = description
         if (shortcut + shortcut1 != '') {

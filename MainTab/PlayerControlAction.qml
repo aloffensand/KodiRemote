@@ -4,5 +4,5 @@ import QtQuick 2.2
 // generated from a description and the shortcut(s)).
 // However, it is only enabled when mainTab is active AND a player is chosen.
 ControlAction {
-    enabled: mainTab.activeFocus && playerControls.playing
+    enabled: mainTab.focus && playerControls.playing
 }

@@ -17,25 +17,30 @@ Rectangle {
     // Which methods to call when polling for new information.
     property var updateMethods: []
 
+    Component.onCompleted: {
+        addNotificationFunction('Player.OnPlay', newPlayerStarted)
+        newPlayerStarted()
+    }
+
     onPlayertypeChanged: {
+        newPlayerStarted()
+    }
+
+    // This may be called if no player is started, but it is only unpaused.
+    // So don't do anything stupid.
+    function newPlayerStarted() {
         if (playertype == 'video') {
             initialCheck()
-            audioStreamBox.enabled = true
-            subtitleBox.enabled = true
             updateMethods = [
-                //updateNowPlayingText, updateVideoTimes,
                 updateVideoTimes,
                 updateAudioStreamBox, updateSubtitleBox
             ]
         } else if (playertype != 'none') {
             initialCheck()
             updateMethods = [
-                //updateNowPlayingText, updateVideoTimes
                 updateVideoTimes
             ]
         } else {  // if playertype is 'none'
-            audioStreamBox.enabled = false
-            subtitleBox.enabled = false
             updateMethods = []
         }
     }
@@ -385,6 +390,7 @@ Rectangle {
             ComboBox {
                 id: audioStreamBox
                 width: 200
+                enabled: playertype == 'video'
                 model: ['-1: None']
                 onHoveredChanged: {
                     if (hovered) {
@@ -416,6 +422,7 @@ Rectangle {
             ComboBox {
                 id: subtitleBox
                 width: 200
+                enabled: playertype == 'video'
                 model: ['-1: None']
                 onHoveredChanged: {
                     if (hovered) {
@@ -450,6 +457,7 @@ Rectangle {
                 Layout.fillWidth: true
                 height: progressBar.height + leftTriangle.height + jumpToText.height
                 color: "transparent"
+                property var enabled: playing
 
                 // triangles are split
                 property bool split: false
@@ -543,7 +551,7 @@ Rectangle {
                     x: 0; y:0
                     height: leftTriangle.y + leftTriangle.height
                     width: progressBar.width
-                    enabled: playing
+                    enabled: progressRect.enabled
                     hoverEnabled: true
 
                     onEntered: updateVideoTimes()
