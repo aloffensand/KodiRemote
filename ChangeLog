@@ -297,3 +297,6 @@
 	shortcuts shortcut_enterUrl and shortcut_enterUrl1
 
 	* SettingsTab/ShortcutSettings: Remove a console.log()
+
+2015-11-30  Aina Lea Offensand
+	* README: More information about where it is installed

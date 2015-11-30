@@ -11,10 +11,17 @@ Compilation:
 Installation:
   make install
 
+By default, the program will be installed to /usr/local, this can be changed by
+calling qmake with a PREFIX variable:
+  qmake PREFIX=<install_path>
+
+The executable is put into PREFIX/bin and its
+desktop file into PREFIX/share/applications.
+
 If you wish to install the program in your home folder, use something like
-  qmake PREFIX=~/bin
+  qmake PREFIX=~/.local
 or
-  qmake PREFIX=~/.local/bin
+  qmake PREFIX=~/
 instead of qmake. Just make sure the chosen location in in your $PATH.
 
 Or you can simply copy KodiRemote wherever you want.
