@@ -14,7 +14,6 @@
     <file>MainTab/ChoosePlayerRow.qml</file>
     <file>MainTab/PlayerControls.qml</file>
 
-    <!--<file alias="VideoTab.qml">VideoTab/VideoTab.qml</file>-->
     <file>VideoTab/VideoTab.qml</file>
 
     <file>SettingsTab/SettingsTab.qml</file>

@@ -9,11 +9,21 @@ Rectangle {
 
     ControlAction {
         id: enterTextAction
+        description: 'Enter text'
         shortcut: shortcut_enterText
         shortcut1: shortcut_enterText1
-        onTriggered: textBox.focus = true
+        onTriggered: sendTextTextBox.focus = true
     }
     SecondShortcutAction { mainAction: enterTextAction }
+
+    ControlAction {
+        id: enterUrlAction
+        description: 'Enter Url'
+        shortcut: shortcut_enterUrl
+        shortcut1: shortcut_enterUrl1
+        onTriggered: sendUrlTextBox.focus = true
+    }
+    SecondShortcutAction { mainAction: enterUrlAction }
 
     ControlAction {
         id: settingsAction
@@ -135,37 +145,62 @@ Rectangle {
     SecondShortcutAction { mainAction: infoAction }
 
     Action {
+        id: sendUrlAction
+        text: 'Send'
+        tooltip: 'Send Video/Audio/Image Url (Enter while in input field)'
+        onTriggered: {
+            var raw_url = sendUrlTextBox.text
+            log('debug', 'Parsing Url ' + raw_url)
+            var youtube_prefix = 'plugin://plugin.video.youtube/?action=play_video&videoid='
+            var regExp0 = /^.*(youtu.be\/|v\/|u\/w\/|embed\/|watch\?v=)([^#\&\?]*).*/
+            var regExp1 = /^.*(youtube.com\/watch.*[\?\&]v=)([^#\&\?]*).*/
+            var regExp2 = /^(mp4|mkv|mov|mp3|avi|flv|wmv|asf|flac|mka|m4a|aac|ogg|pls|jpg|jpeg|png|gif|tiff)$/
+            var match0 = raw_url.match(regExp0)
+            var match1 = raw_url.match(regExp1)
+            var extension = raw_url.split('.').pop()
+            if (match0 && match0[2].length == 11) {
+                var send_url = youtube_prefix + match0[2]
+            } else if (match1 && match1[2].length == 11) {
+                var send_url = youtube_prefix + match1[2]
+            } else if (regExp2.test(extension)) {
+                var send_url = raw_url
+            } else {
+                log('error', 'The requested url is not supported:' + raw_url)
+                return
+            }
+            log('debug', 'Sending Url ' + send_url)
+            sendCommand('"Player.Open"', '{"item": {"file": "' + send_url + '"}}')
+        }
+    }
+
+    Action {
         id: sendTextAction
         text: 'Send'
-        tooltip: 'Send text (Enter while in input field)'
+        tooltip: 'Send text to the onscreen keyboard (Enter while in input field)'
         onTriggered: {
-            log('debug', 'Sending text ' + textBox.text)
-            sendCommand('"Input.SendText"', '{"text": "' + textBox.text + '"}')
-            sendCommand('"Input.endText"', '{"text": "' + textBox.text + '"}')
+            log('debug', 'Sending text ' + sendTextTextBox.text)
+            sendCommand('"Input.SendText"', '{"text": "' + sendTextTextBox.text + '"}')
             generalControls.focus = true
         }
     }
 
     Grid {
         id: controlGrid
-        columns: 3
+        columns: 6
         Button { action: backAction }
         Button { action: upAction }
         Button { action: infoAction }
+        Text { text: ' ' }
+        Text { text: ' ' }
+        Text { text: ' ' }
+
         Button { action: leftAction }
         Button { action: selectAction }
         Button { action: rightAction }
-        Button { action: homeAction }
-        Button { action: downAction }
-        Button { action: contextAction }
-    }
-    Row {
-        anchors.left: controlGrid.right
-        anchors.leftMargin: 5
-        anchors.bottom: controlGrid.bottom
+        Text { text: ' ' }
         TextField {
-            id: textBox
-            placeholderText: 'Send text (t)'
+            id: sendTextTextBox
+            placeholderText: enterTextAction.tooltip
             onAccepted: sendTextAction()
             Keys.onPressed: {
                 if (event.key == Qt.Key_Enter || event.key == Qt.Key_Return) {
@@ -177,8 +212,26 @@ Rectangle {
                 }
             }
         }
-        Button {
-            action: sendTextAction
+        Button { action: sendTextAction }
+
+        Button { action: homeAction }
+        Button { action: downAction }
+        Button { action: contextAction }
+        Text { text: ' ' }
+        TextField {
+            id: sendUrlTextBox
+            placeholderText: enterUrlAction.tooltip
+            onAccepted: sendUrlAction()
+            Keys.onPressed: {
+                if (event.key == Qt.Key_Enter || event.key == Qt.Key_Return) {
+                    sendUrlAction.onTriggered()
+                    event.accepted = true
+                } else if (event.key == Qt.Key_Escape) {
+                    generalControls.focus = true
+                    event.accepted = true
+                }
+            }
         }
+        Button { action: sendUrlAction }
     }
 }

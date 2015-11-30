@@ -12,7 +12,8 @@ GridLayout {
         upText, upText1, downText, downText1,
         backText, backText1, selectText, selectText1,
         contextText, contextText1, infoText, infoText1,
-        homeText, homeText1, enterTextText, enterTextText1,
+        homeText, homeText1,
+        enterTextText, enterTextText1, enterUrlText, enterUrlText1,
         settingsText, settingsText1,
         playpauseText, playpauseText1, stopText, stopText1,
         nextText, nextText1, previousText, previousText1,
@@ -104,7 +105,6 @@ GridLayout {
     }
 
     function saveAllValid() {
-        console.log('er')
         for (var i=0; i<shortcutTextFields.length; i++) {
             var item = shortcutTextFields[i]
             if (item.valid && item.unique) {
@@ -168,6 +168,9 @@ GridLayout {
     Label { text: 'Enter Text: '; Layout.alignment: labelAlignment }
     ShortcutTextField { id: enterTextText; target: "shortcut_enterText" }
     ShortcutTextField { id: enterTextText1; target: "shortcut_enterText1" }
+    Label { text: 'Enter Url: '; Layout.alignment: labelAlignment }
+    ShortcutTextField { id: enterUrlText; target: "shortcut_enterUrl" }
+    ShortcutTextField { id: enterUrlText1; target: "shortcut_enterUrl1" }
     Label { text: 'Settings: '; Layout.alignment: labelAlignment }
     ShortcutTextField { id: settingsText; target: "shortcut_settings" }
     ShortcutTextField { id: settingsText1; target: "shortcut_settings1" }

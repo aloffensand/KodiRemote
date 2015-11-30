@@ -80,6 +80,8 @@ Window {
     property string shortcut_home1: ''
     property string shortcut_enterText: 'T'
     property string shortcut_enterText1: ''
+    property string shortcut_enterUrl: 'U'
+    property string shortcut_enterUrl1: ''
     property string shortcut_settings: ''
     property string shortcut_settings1: ''
     property string shortcut_playpause: 'Space'
@@ -134,6 +136,8 @@ Window {
         property alias home1: frame.shortcut_home1
         property alias enterText: frame.shortcut_enterText
         property alias enterText1: frame.shortcut_enterText1
+        property alias enterUrl: frame.shortcut_enterUrl
+        property alias enterUrl1: frame.shortcut_enterUrl1
         property alias settings: frame.shortcut_settings
         property alias settings1: frame.shortcut_settings1
         property alias playpause: frame.shortcut_playpause
@@ -182,24 +186,25 @@ Window {
         onTextMessageReceived: {
             //log('debug', message)
             var jsonObj = eval('(' + message + ')')
-            // Handle notifications
+            // Handle notifications and some errors
             if (jsonObj.id == null) {
-                log('debug', jsonObj.method)
-                if (dictContainsKey(notificationMap, jsonObj.method)) {
+                if (jsonObj.error != null) {
+                    log('error', 'Error ' + jsonObj.error.code + ': ' +
+                        jsonObj.error.message + ' ' + jsonObj.error.data)
+                } else if (dictContainsKey(notificationMap, jsonObj.method)) {
                     var functions = notificationMap[jsonObj.method]
                     for (var i=0; i < functions.length; i++) {
                         functions[i](jsonObj.params)
                     }
                 }
+            } else if (jsonObj.id < highestId) {
+                var request = awaitingResponse[jsonObj.id]
+                receiveResponse(request[0], request[1], jsonObj, request[2])
+                awaitingResponse[jsonObj.id] = null
+                usableIds.push(jsonObj.id)
             } else {
-                if (jsonObj.id < highestId) {
-                    var request = awaitingResponse[jsonObj.id]
-                    getResponse(request[0], request[1], jsonObj, request[2])
-                    awaitingResponse[jsonObj.id] = null
-                    usableIds.push(jsonObj.id)
-                } else {
-                    log('error', 'Response has an unrecognised id.')
-                }
+                log('error', 'Response has an unrecognised id: ' +
+                    jsonObj.id + ', message: ' + message)
             }
         }
     }
@@ -258,7 +263,7 @@ Window {
 
     // Send a command to kodi that expects an answer, call setterMethod when
     // the response is received.
-    // (Call getResponse which then calls setterMethod)
+    // (Call receiveResponse which then calls setterMethod)
     function sendRequest(method, params, setterMethod) {
         var id = 0
         if (usableIds.length > 0) {
@@ -278,7 +283,7 @@ Window {
 
     // When a response is received, check whether it's an error. If not, call
     // the setterMethod (if given).
-    function getResponse(method, params, jsonObj, setterMethod) {
+    function receiveResponse(method, params, jsonObj, setterMethod) {
         if (jsonObj.error != null) {
             if ( ! expectedError(method, params, jsonObj.error)) {
                 logToConsole('error', 

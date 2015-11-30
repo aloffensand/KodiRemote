@@ -236,7 +236,7 @@
 
 	* main.pro: Add INSTALLS
 
-2015-10-??  Aina Lea Offensand
+2015-10-17?  Aina Lea Offensand
 	* ControlAction, PlayerControlAction (enabled): Depends on mainTab.focus
 	instead of mainTab.activeFocus
 
@@ -269,3 +269,31 @@
 	* main.pro: Rename to project.pro
 
 	* OtherSlider.qml, OtherSliderStyle.qml: Remove unused files
+
+2015-11-30  Aina Lea Offensand
+	* resources.qml: Add new files, remove a comment
+
+	* MainTab/GeneralControls.qml (sendTextAction): Fix a bug (remove
+	sendCommand "Input.endText")
+
+	* main.qml (getResponse): Rename to receiveResponse
+
+	* main.qml (onTextMessageReceived): Log more errors, make method more
+	readable
+
+	* MainTab/GeneralControls.qml (sendUrlAction, sendUrlTextBox,
+	enterUrlAction): New sendUrl feature
+
+	* MainTab/GeneralControls.qml (sendTextAction, textBox): Now part of the
+	controlGrid
+
+	* MainTab/GeneralControls.qml (sendTextAction, textBox): Display the
+	correct shortcut
+
+	* MainTab/GeneralControls.qml (sendTextAction, textBox): Differ more from the new
+	sendUrl feature
+
+	* main.qml, MainTab/GeneralControls.qml, SettingsTab/ShortcutSettings: New
+	shortcuts shortcut_enterUrl and shortcut_enterUrl1
+
+	* SettingsTab/ShortcutSettings: Remove a console.log()

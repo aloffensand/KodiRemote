@@ -2,6 +2,10 @@
 Add dependencies to Readme
 Items grow out of the visible area when the mainTab gets too small
 connectionBox and messageBox overlap with items
+Fix fixed colours (notification background etc)
+ProgressBar: Change colours if disabled
+
+Add MusicTab
 Commandline options?
 
 Find out which shortcuts have what string (multimedia keys?)
@@ -10,10 +14,10 @@ Skip intro: while watching a series, you can say how long the intro is (or
     press "intro started" and "intro stopped" while watching an episode). Then
     you can press a button when the intro starts to jump that far ahead.
 ProgressBar: Make triangle splittable
-ProgressBar: Change colours if disabled
-Fix fixed colours (notification background etc)
 
 Bugs:
+Pressing Return in the sendTextTextBox calls selectAction instead of accepting
+    the input. Pressing Menu does the same thing, most other keys work.
 When I switch off my wifi device, I get a
     "Method "GetAll" with signature "s" on interface
     "org.freedesktop.DBus.Properties" doesn't exist".
