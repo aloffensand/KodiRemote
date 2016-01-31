@@ -6,9 +6,10 @@
 
     <!-- Main Controls Tab -->
     <file>MainTab/MainTab.qml</file>
-    <file>MainTab/ControlAction.qml</file>
+    <file>MainTab/ControlButton.qml</file>
+    <file>MainTab/PlayerControlButton.qml</file>
+    <file>MainTab/ControlTextField.qml</file>
     <file>MainTab/SecondShortcutAction.qml</file>
-    <file>MainTab/PlayerControlAction.qml</file>
     <file>MainTab/Triangle.qml</file>
     <file>MainTab/GeneralControls.qml</file>
     <file>MainTab/ChoosePlayerRow.qml</file>
@@ -24,6 +25,8 @@
     <file>SettingsTab/ShortcutTextField.qml</file>
     <file>SettingsTab/VideoSettings.qml</file>
     <file>SettingsTab/SkipIntroSettings.qml</file>
+
+    <file>DebugTab/DebugTab.qml</file>
 
 
     <file>icons/audio-volume-high.png</file>

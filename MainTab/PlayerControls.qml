@@ -1,5 +1,5 @@
-import QtQuick 2.1
-import QtQuick.Controls 1.1
+import QtQuick 2.5
+import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
 
 Rectangle {
@@ -78,6 +78,7 @@ Rectangle {
 
     // Called whenever a new player is started
     function initialCheck() {
+        log('debug', 'New player started (or playback resumed), requesting information…')
         var properties = '"totaltime", "percentage", "time"'
         //properties += ', "title"'
         //properties += ', "episode", "season", "showtitle", "tvshowid"'
@@ -92,6 +93,7 @@ Rectangle {
 
     // Called whenever information about a new player is received
     function initialSetter(jsonObj) {
+        log('debug', 'Received information about new player.')
         //setNowPlayingText(jsonObj)
         setVideoTimes(jsonObj)
         // Everything that follows is about audioStreams and subtitles.
@@ -114,6 +116,8 @@ Rectangle {
                 var args = '{"playerid": ' + playerid +
                            ', "stream": ' + newIndex + '}'
                 sendCommand('"Player.SetAudioStream"', args)
+                log('debug', 'Set audio to default ' + defaultAudio +
+                    ' (stream ' + newIndex + ')')
                 reset = true
             }
         }
@@ -122,6 +126,7 @@ Rectangle {
             if (currentSubs != defaultSubtitles && subtitleBox.indexOfLanguage(defaultSubtitles) != -2) {
                 var newIndex = subtitleBox.indexOfLanguage(defaultSubtitles)
                 setSubtitleToIndex(newIndex)
+                log('debug', 'Set subtitles to default ' + defaultSubtitles)
                 reset = true
             }
         }
@@ -280,75 +285,11 @@ Rectangle {
         updateVideoTimes()
     }
 
-    PlayerControlAction {
-        id: playPauseAction
-        description: 'Play/Pause'
-        iconName: 'media-playback-pause'
-        shortcut: shortcut_playpause
-        shortcut1: shortcut_playpause1
-        onTriggered: {
-            log('debug', 'Play/Pause...')
-            sendCommand('"Player.PlayPause"', '{"playerid": ' + playerid + '}')
-        }
-    }
-    SecondShortcutAction { mainAction: playPauseAction }
-    PlayerControlAction {
-        id: stopAction
-        description: 'Stop'
-        iconName: 'media-playback-stop'
-        shortcut: shortcut_stop
-        onTriggered: {
-            log('debug', 'Stopping playback')
-            sendCommand('"Player.Stop"', '{"playerid": ' + playerid + '}')
-        }
-    }
-    SecondShortcutAction { mainAction: stopAction }
-    PlayerControlAction {
-        id: nextAction
-        description: 'Next item or chapter'
-        iconName: 'media-skip-forward'
-        shortcut: shortcut_next
-        shortcut1: shortcut_next1
-        onTriggered: {
-            log('debug', 'Next item')
-            var args = '{"playerid": ' + playerid +
-                       ', "to": "next"}'
-            sendCommand('"Player.GoTo"', args)
-        }
-    }
-    SecondShortcutAction { mainAction: nextAction }
-    PlayerControlAction {
-        id: previousAction
-        description: 'Previous item or chapter'
-        iconName: 'media-skip-backward'
-        shortcut: shortcut_previous
-        shortcut1: shortcut_previous1
-        onTriggered: {
-            log('debug', 'Previous item')
-            var args = '{"playerid": ' + playerid +
-                       ', "to": "previous"}'
-            sendCommand('"Player.GoTo"', args)
-        }
-    }
-    SecondShortcutAction { mainAction: previousAction }
-    PlayerControlAction {
-        id: showOsdAction
-        text: 'Show OSD'
-        description: 'Show OnScreenDisplay for the current player'
-        shortcut: shortcut_osd
-        shortcut1: shortcut_osd1
-        onTriggered: {
-            log('debug', 'Showing OSD')
-            sendCommand('"Input.ShowOSD"', '{}')
-        }
-    }
-    SecondShortcutAction { mainAction: showOsdAction }
-    ControlAction {
-        id: playpauseselectAction
-        description: 'If there is an active player, this will act as PlayPause; else, it will be Select.'
-        shortcut: shortcut_playpauseselect
-        shortcut1: shortcut_playpauseselect1
-        onTriggered: {
+    Shortcut {
+        id: playpauseselectShortcut
+        property string description: 'If there is an active player, this will act as PlayPause; else, it will be Select.'
+        sequence: shortcut_playpauseselect
+        onActivated: {
             if (playing) {
                 log('debug', 'Sending playpause')
                 sendCommand('"Player.PlayPause"', '{"playerid": ' + playerid + '}')
@@ -358,7 +299,10 @@ Rectangle {
             }
         }
     }
-    SecondShortcutAction { mainAction: playpauseselectAction }
+    Shortcut {
+        sequence: shortcut_playpauseselect1
+        onActivated: playpauseselectShortcut.onActivated()
+    }
 
     Column {
         anchors.fill: parent
@@ -372,13 +316,67 @@ Rectangle {
         }
 
         Row {
-            Button { action: playPauseAction }
-            Button { action: stopAction }
+            PlayerControlButton {
+                id: playPauseButton
+                description: 'Play/Pause'
+                iconName: 'media-playback-pause'
+                shortcut: shortcut_playpause
+                shortcut1: shortcut_playpause1
+                onClicked: {
+                    log('debug', 'Play/Pause...')
+                    sendCommand('"Player.PlayPause"', '{"playerid": ' + playerid + '}')
+                }
+            }
+            PlayerControlButton {
+                id: stopButton
+                description: 'Stop'
+                iconName: 'media-playback-stop'
+                shortcut: shortcut_stop
+                onClicked: {
+                    log('debug', 'Stopping playback')
+                    sendCommand('"Player.Stop"', '{"playerid": ' + playerid + '}')
+                }
+            }
             Text { text: '     ' }
-            Button { action: previousAction }
-            Button { action: nextAction }
+            PlayerControlButton {
+                id: nextButton
+                description: 'Next item or chapter'
+                iconName: 'media-skip-forward'
+                shortcut: shortcut_next
+                shortcut1: shortcut_next1
+                onClicked: {
+                    log('debug', 'Next item')
+                    var args = '{"playerid": ' + playerid +
+                               ', "to": "next"}'
+                    sendCommand('"Player.GoTo"', args)
+                }
+            }
+            PlayerControlButton {
+                id: previousButton
+                description: 'Previous item or chapter'
+                iconName: 'media-skip-backward'
+                shortcut: shortcut_previous
+                shortcut1: shortcut_previous1
+                onClicked: {
+                    log('debug', 'Previous item')
+                    var args = '{"playerid": ' + playerid +
+                               ', "to": "previous"}'
+                    sendCommand('"Player.GoTo"', args)
+                }
+            }
             Text { text: '      ' }
-            Button { action: showOsdAction }
+            PlayerControlButton {
+                id: showOsdButton
+                text: 'Show OSD'
+                description: 'Show OnScreenDisplay for the current player'
+                shortcut: shortcut_osd
+                shortcut1: shortcut_osd1
+                onClicked: {
+                    log('debug', 'Showing OSD')
+                    sendCommand('"Input.ShowOSD"', '{}')
+                }
+            }
+
         }
 
         Grid {
@@ -410,7 +408,7 @@ Rectangle {
                 function indexOfLanguage(language) {
                     for (var i=0; i<model.length; i++) {
                         if (model[i].split(': ')[1] == language) {
-                            return i-1
+                            return i
                         }
                     }
                     return -2

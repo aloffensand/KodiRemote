@@ -4,6 +4,7 @@ Items grow out of the visible area when the mainTab gets too small
 connectionBox and messageBox overlap with items
 Fix fixed colours (notification background etc)
 ProgressBar: Change colours if disabled
+Default audio & subtitles: More options
 
 Add MusicTab
 Commandline options?

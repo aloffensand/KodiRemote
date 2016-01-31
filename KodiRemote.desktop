@@ -4,4 +4,4 @@ Name=KodiRemote
 GenericName=A remote for the Kodi Media Centre
 #Icon=KodiRemote.png
 #Categories=AudioVideo
-Exec=KodiRemote %u
+Exec=KodiRemote

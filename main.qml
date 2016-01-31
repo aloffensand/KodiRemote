@@ -6,6 +6,7 @@ import Qt.WebSockets 1.0
 import "MainTab"
 import "VideoTab"
 import "SettingsTab"
+import "DebugTab"
 
 Window {
     id: frame
@@ -30,7 +31,8 @@ Window {
     property string hostname: 'morgoth'
     property string port: '9090'
     property string kodiUrl: 'ws://' + hostname + ':' + port + '/jsonrpc'
-    property string xbmcUrl: 'http://' + hostname + ':8080/jsonrpc'
+    property string httpUrl: 'http://' + hostname + ':8080'
+    property string imageUrl: 'http://' + hostname + ':8080/image/image://'
     property bool connected: false
     property string loglevel: 'notice'
 
@@ -38,6 +40,7 @@ Window {
     // Except for 'none'.
     property var loglevels: {
         'none': -1,
+        'requested': 0,
         'error': 3,
         'warning': 4,
         'notice': 5,
@@ -196,8 +199,10 @@ Window {
                     for (var i=0; i < functions.length; i++) {
                         functions[i](jsonObj.params)
                     }
+                } else {
+                    log('debug', 'Received jsonObj without any id or Error message')
                 }
-            } else if (jsonObj.id < highestId) {
+            } else if (jsonObj.id <= highestId) {
                 var request = awaitingResponse[jsonObj.id]
                 receiveResponse(request[0], request[1], jsonObj, request[2])
                 awaitingResponse[jsonObj.id] = null
@@ -219,6 +224,15 @@ Window {
             console.log("Reconnection attempt")
             webSocket.active = false
             webSocket.active = true
+        }
+    }
+
+    function logCurrentRequests() {
+        log('debug', 'Highest request id: ' + highestId)
+        log('debug', 'Usable ids: ' + usableIds)
+        log('debug', 'Awaiting response:')
+        for (var i=0; i<=highestId; i++) {
+            log('requested', '\t' + i + ': ' + awaitingResponse[i])
         }
     }
 
@@ -271,6 +285,7 @@ Window {
         } else {
             id = highestId
             highestId += 1
+            log('debug', 'Highest used id: ' + (highestId - 1))
         }
         awaitingResponse[id] = [method, params, setterMethod]
         var text = '{"jsonrpc": "2.0"' + 
@@ -369,7 +384,7 @@ Window {
         style: MyTabViewStyle {}
 
         onCurrentIndexChanged: {
-            getTab(currentIndex).forceActiveFocus()
+            getTab(currentIndex).focus = true
         }
 
         Rectangle {
@@ -532,6 +547,9 @@ Window {
         }
         SettingsTab {
             id: settingsTab
+        }
+        DebugTab {
+            id: debugTab
         }
     }
 }

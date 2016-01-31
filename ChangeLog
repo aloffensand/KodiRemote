@@ -271,7 +271,7 @@
 	* OtherSlider.qml, OtherSliderStyle.qml: Remove unused files
 
 2015-11-30  Aina Lea Offensand
-	* resources.qml: Add new files, remove a comment
+	* resources.qml: Remove a comment
 
 	* MainTab/GeneralControls.qml (sendTextAction): Fix a bug (remove
 	sendCommand "Input.endText")
@@ -300,3 +300,62 @@
 
 2015-11-30  Aina Lea Offensand
 	* README: More information about where it is installed
+
+2016-01-31  Aina Lea Offensand
+	* All: Use QtQuick 2.5 where necessary (for Shortcuts)
+
+	* ChangeLog: Fix the Changelog entry before the previous one
+
+	* KodiRemote.desktop: Remove %u
+
+	* README: Add more dependencies
+
+	* MainTab/PlayerControls.qml (audioStreamBox.indexOfLanguage): Fix return
+	value
+
+	* MainTab/MainTab.qml: Add bool shortcutFocus, Item focusCatcher and
+	function returnFocus()
+
+	* MainTab/GeneralControls.qml: Use MainTab's returnFocus()
+
+	* MainTab/ControlButton.qml, MainTab/ControlTextField,
+	MainTab/ControlAction.qml: TextField or Button with
+	Shortcuts replaces Action, use MainTab's shortcutFocus, use the
+	Qt Resource System for the icons
+
+	* MainTab/GeneralControls.qml, MainTab/PlayerControls.qml,
+	MainTab/ControlAction, MainTab/ControlButton, MainTab/ControlTextField,
+	MainTab/PlayerControlButton.qml, MainTab/PlayerControlAction: Use
+	ControlButton, ControlTextField, PlayerControlButton or Shortcuts instead
+	of ControlAction
+
+	* MainTab/GeneralControls.qml: Use GridLayout instead of Grid, change the
+	layout of the buttons
+
+	* MainTab/GeneralControls.qml (sendTextTextBox, sendUrlTextBox): Embiggen
+	the textboxes
+
+	* MainTab/GeneralControls.qml (sendUrlAction): Sends the URL even if it
+	doesn't end with a known filetype suffix
+
+	* main.qml: Remove xbmcUrl, add httpUrl, add imageUrl
+
+	* main.qml (onCurrentIndexChanged): Set focus to true instead of using
+	forceActiveFocus()
+
+	* main.qml (onTextMessageReceived, sendRequest): More debug logs
+
+	* MainTab/PlayerControls.qml (initialCheck, initialSetter): More debug logs
+
+	* main.qml: New loglevel 'requested'
+
+	* main.qml: New function logCurrentRequests()
+
+	* DebugTab/DebugTab.qml: New file
+
+	* main.qml: Add DebugTab
+
+	* resources.qrc: Add DebugTab/DebugTab.qml, MainTab/ControlTextField,
+	MainTab/ControlButton.qml and MainTab/PlayerControlButton.qml; Remove
+	MainTab/ControlAction.qml, MainTab/PlayerControlAction.qml and
+	MainTab/SecondShortcutAction.qml

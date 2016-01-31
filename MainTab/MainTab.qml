@@ -15,11 +15,22 @@ Tab {
         anchors.fill: parent
         color: "transparent"
         focus: true
+        property bool shortcutFocus: focusCatcher.focus
         Keys.forwardTo: [generalControls, playerControls]
         property int marginVal: height / 20
         property int rowHeight: 20
         property int playerid: -1
         property string playertype: 'none'
+
+        Item {
+            id: focusCatcher
+            focus: false
+            Component.onCompleted: focus = true
+        }
+
+        function returnFocus() {
+            focusCatcher.focus = true
+        }
 
         // Poll for information every <interval> milliseconds
         Timer {
@@ -36,7 +47,7 @@ Tab {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: mainRec.focus = true
+            onClicked: focusCatcher.focus = true
         }
 
         GeneralControls {

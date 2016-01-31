@@ -1,9 +1,20 @@
 
 Dependencies:
-Qt5
-for Fedora:
-  qt5-qtwebsockets-devel
-  ??
+  In general: search for something like
+    qtquick1-dev
+    qtdeclarative-dev
+    qtwebsockets-dev
+
+  for Fedora:
+    qt5-qtwebsockets-devel
+    ??
+
+  for Tumbleweed:
+    libqt5-qtquick1-devel
+    libqt5-qtdeclarative-devel
+    libqt5-qtwebsockets-devel
+
+  If a dependecy is missing, feel free to tell me.
 
 Compilation:
   qmake
