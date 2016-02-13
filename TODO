@@ -1,4 +1,21 @@
 
+
+Rewrite much of MainTab/PlayerControls:
+ - Add static ids for polling requests like player properties, other "requests"
+   get an id of [index] + 30 or something like that.
+ - Make one polling method that is called by all polling requests.
+
+Add a timer for sendUrl: if no player is started 5 seconds later, give a
+warning/ an error.
+
+
+Playback speed control
+empty the url-textfield
+Make a Timer for requests: If it isn't received in a set amount of time even
+    though it's supposed to be connected, delete the request (or resend it?)
+    and log that there's a connection issue. Perhaps even try reconnecting.
+    I might also give static ids to all requests (e.g. getvolume always has id=0)
+
 Add dependencies to Readme
 Items grow out of the visible area when the mainTab gets too small
 connectionBox and messageBox overlap with items
@@ -17,8 +34,6 @@ Skip intro: while watching a series, you can say how long the intro is (or
 ProgressBar: Make triangle splittable
 
 Bugs:
-Pressing Return in the sendTextTextBox calls selectAction instead of accepting
-    the input. Pressing Menu does the same thing, most other keys work.
 When I switch off my wifi device, I get a
     "Method "GetAll" with signature "s" on interface
     "org.freedesktop.DBus.Properties" doesn't exist".

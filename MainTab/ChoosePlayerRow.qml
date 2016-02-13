@@ -9,6 +9,7 @@ Row {
         addNotificationFunction('Player.OnPlay', updatePlayeridBox)
         addNotificationFunction('Player.OnStop', updatePlayeridBox)
         addNotificationFunction('Internal.OnConnectionEstablished', updatePlayeridBox)
+        addNotificationFunction('Internal.RefreshAll', updatePlayeridBox)
     }
 
     function setActivePlayerList(jsonObj) {

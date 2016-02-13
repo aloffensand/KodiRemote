@@ -8,6 +8,19 @@ Rectangle {
     height: childrenRect.height
     width: childrenRect.width
 
+    Component.onCompleted: {
+        addNotificationFunction('Internal.RefreshAll', updateVolumeControls)
+    }
+
+    function updateVolumeControls() {
+        var args = '{"properties": ["volume", "muted"]}'
+        sendRequest('"Application.GetProperties"', args, setVolumeControls)
+    }
+    function setVolumeControls(jsonObj) {
+        volumeSlider.value = jsonObj.result.volume
+        volumeButton.mute = jsonObj.result.muted
+    }
+
     Shortcut {
         id: settingsShortcut
         sequence: shortcut_settings
@@ -45,6 +58,7 @@ Rectangle {
             }
             log('debug', 'Sending Url ' + send_url)
             sendCommand('"Player.Open"', '{"item": {"file": "' + send_url + '"}}')
+            sendUrlTextBox.text = ''
             mainRec.returnFocus()
         }
     }
@@ -61,10 +75,10 @@ Rectangle {
     }
 
     GridLayout {
-        id: movementGrid
         columnSpacing: 1
         rowSpacing: 1
 
+        // Movement Grid
         ControlButton {
             Layout.row: 1; Layout.column: 2
             description: 'Up'
@@ -120,16 +134,15 @@ Rectangle {
                 sendCommand('"Input.Select"', '{}')
             }
         }
-    }
 
-    GridLayout {
-        id: additionalControlsGrid
-        anchors.left: movementGrid.right
-        anchors.margins: 5
-        rowSpacing: 1; columnSpacing: 1
+        Text {
+            text: '  '
+            Layout.row: 1; Layout.column: 4
+        }
 
+        // Other Controls
         ControlButton {
-            Layout.row: 1; Layout.column: 1
+            Layout.row: 2; Layout.column: 6
             description: 'Back'
             iconName: 'edit-undo'
             shortcut: shortcut_back
@@ -140,7 +153,7 @@ Rectangle {
             }
         }
         ControlButton {
-            Layout.row: 1; Layout.column: 2
+            Layout.row: 2; Layout.column: 7
             description: 'Home'
             iconName: 'go-home'
             shortcut: shortcut_home
@@ -151,7 +164,7 @@ Rectangle {
             }
         }
         ControlButton {
-            Layout.row: 2; Layout.column: 1
+            Layout.row: 3; Layout.column: 6
             description: 'Context'
             iconName: 'open-menu-symbolic.symbolic'
             shortcut: shortcut_context
@@ -162,7 +175,7 @@ Rectangle {
             }
         }
         ControlButton {
-            Layout.row: 2; Layout.column: 2
+            Layout.row: 3; Layout.column: 7
             description: 'Info'
             iconName: 'help-about'
             shortcut: shortcut_info
@@ -173,8 +186,66 @@ Rectangle {
             }
         }
 
+        Text {
+            text: '  '
+            Layout.row: 1; Layout.column: 8
+        }
+
+        // Volume Controls
+        Row {
+            Layout.columnSpan: 3
+            Layout.row: 1; Layout.column: 9
+            spacing: 7
+            //width: childrenRect.width
+            //height: childrenRect.height
+            ControlButton {
+                id: volumeButton
+                anchors.verticalCenter: parent.verticalCenter
+                description: 'Mute'
+                iconName: 'audio-volume-muted'
+                checkable: true
+                property bool mute: false
+                checked: mute
+                shortcut: shortcut_mute
+                shortcut1: shortcut_mute1
+                onClicked: {
+                    if (mute) {
+                        log('debug', 'Unmute')
+                        sendRequest('"Application.SetMute"', '{"mute": false}', setMute)
+                    } else {
+                        log('debug', 'Mute')
+                        sendRequest('"Application.SetMute"', '{"mute": true}', setMute)
+                    }
+                }
+                function setMute(jsonObj) {
+                    mute = jsonObj.result
+                }
+            }
+
+            Slider {
+                id: volumeSlider
+                anchors.verticalCenter: parent.verticalCenter
+                stepSize: 1.0
+                maximumValue: 100.0
+                onPressedChanged: {
+                    if ( ! pressed) {
+                        log('debug', 'Changing volume to ' + value)
+                        sendRequest('"Application.SetVolume"', '{"volume": ' + value + '}')
+                    }
+                }
+            }
+            Label {
+                id: volumeLabel
+                anchors.verticalCenter: parent.verticalCenter
+                text: volumeSlider.value
+                font.strikeout: volumeButton.mute
+                //font.italic: volumeSlider.pressed
+            }
+        }
+
+        // Send Text/Url
         ControlTextField {
-            Layout.row: 1; Layout.column: 3
+            Layout.row: 2; Layout.column: 9
             Layout.preferredWidth: implicitWidth * 2.5
             id: sendTextTextBox
             width: implicitWidth * 2.5
@@ -186,7 +257,7 @@ Rectangle {
         Button { action: sendTextAction }
 
         ControlTextField {
-            Layout.row: 2; Layout.column: 3
+            Layout.row: 3; Layout.column: 9
             Layout.preferredWidth: implicitWidth * 2.5
             id: sendUrlTextBox
             width: implicitWidth * 2.5

@@ -359,3 +359,46 @@
 	MainTab/ControlButton.qml and MainTab/PlayerControlButton.qml; Remove
 	MainTab/ControlAction.qml, MainTab/PlayerControlAction.qml and
 	MainTab/SecondShortcutAction.qml
+
+2016-02-05  Aina Lea Offensand
+	* MainTab/PlayerControls.qml: Fix the order of the nextButton and
+	previousButton
+
+	* MainTab/GeneralControls.qml: Merge the two GridLayouts
+
+	* MainTab/GeneralControls.qml (updateVolumeControls, setVolumeControls,
+	muteButton, volumeSlider, volumeLabel): New volume controls
+
+	* MainTab/GeneralControls.qml (sendUrlAction): Empty the sendUrlTextBox
+
+	* main.qml, SettingsTab/ShortcutSettings.qml: New shortcuts refreshAll and mute
+
+	* main.qml: New notification Internal.RefreshAll, activated on connection
+	established and on refreshShortcut pressed
+
+	* MainTab/ChoosePlayerRow.qml, GeneralControls.qml, PlayerControls.qml:
+	Update all elements on Internal.RefreshAll notification
+
+	* main.qml (timeoutTimer): New item, logs when requests don't get answered
+	and reconnects if too many are unanswered in a short time
+
+	* main.qml: awaitingResponse has a fourth element in each array: The
+	timeout counter.
+
+	* main.qml: ReconnectTimer uses a smaller Timer.interval at first, but it
+	gets longer with every attempt
+
+	* main.qml: Make awaitingResponse an Array instead of Dict, delete
+	highestId
+
+	* main.qml (webSocket): New function reconnect(), is used wherever
+	reconnection is required
+
+	* main.qml (onTextMessageReceived, receiveResponse): Better error logging
+
+	* main.qml: Change loglevel ids of 'none' and 'requested' (both -=1)
+
+	* DebugTab/DebugTab.qml: Add 'Introspect' and 'Log key bindings' Button for
+	developers, make it a Grid
+
+	* MainTab/PlayerControls.qml (initialSetter): More logs for subtitles

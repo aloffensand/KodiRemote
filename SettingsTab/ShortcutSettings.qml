@@ -8,6 +8,8 @@ GridLayout {
 
     property int lastFocus: 0
     property var shortcutTextFields: [
+        refreshText, refreshText1,
+        muteText, muteText1,
         leftText, leftText1, rightText, rightText1,
         upText, upText1, downText, downText1,
         backText, backText1, selectText, selectText1,
@@ -138,6 +140,12 @@ GridLayout {
 
     BackAction { id: backAction }
 
+    Label { text: 'Refresh elements: '; Layout.alignment: labelAlignment }
+    ShortcutTextField { id: refreshText; target: "shortcut_refresh" }
+    ShortcutTextField { id: refreshText1; target: "shortcut_refresh1" }
+    Label { text: 'Toggle Mute/Unmute: '; Layout.alignment: labelAlignment }
+    ShortcutTextField { id: muteText; target: "shortcut_mute" }
+    ShortcutTextField { id: muteText1; target: "shortcut_mute1" }
     Label { text: 'Left: '; Layout.alignment: labelAlignment }
     ShortcutTextField { id: leftText; target: "shortcut_left" }
     ShortcutTextField { id: leftText1; target: "shortcut_left1" }

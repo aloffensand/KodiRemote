@@ -1,4 +1,4 @@
-import QtQuick 2.1
+import QtQuick 2.5
 import QtQuick.Controls 1.1
 import QtQuick.Window 2.0
 import Qt.labs.settings 1.0
@@ -37,10 +37,10 @@ Window {
     property string loglevel: 'notice'
 
     // These are the loglevels defined in RFC5424, also used by rsyslog.
-    // Except for 'none'.
+    // Except for 'none' and 'requested'.
     property var loglevels: {
-        'none': -1,
-        'requested': 0,
+        'none': -2,
+        'requested': -1,
         'error': 3,
         'warning': 4,
         'notice': 5,
@@ -56,11 +56,9 @@ Window {
 
     // Stores data about requests, used to call the correct setterFunction
     // when a response is received.
-    property var awaitingResponse: {'id': ['method', 'params', 'setterFunction']}
+    property var awaitingResponse: []
     // Which entries in awaitingResponse may be overwritten
     property var usableIds: []
-    // When no entries can be overwritten, create a new one with id=highestId
-    property int highestId: 0
 
     // Customisable shortcuts
     property string shortcut_left: 'Left'
@@ -99,6 +97,10 @@ Window {
     property string shortcut_osd1: ''
     property string shortcut_playpauseselect: ''
     property string shortcut_playpauseselect1: ''
+    property string shortcut_refresh: StandardKey.Refresh
+    property string shortcut_refresh1: 'Ctrl+R'
+    property string shortcut_mute: 'M'
+    property string shortcut_mute1: ''
 
     // Which audio/subtitles to use when a video is started
     property string defaultAudio: ''
@@ -155,6 +157,10 @@ Window {
         property alias osd1: frame.shortcut_osd1
         property alias playpauseselect: frame.shortcut_playpauseselect
         property alias playpauseselect1: frame.shortcut_playpauseselect1
+        property alias refresh: frame.shortcut_refresh
+        property alias refresh1: frame.shortcut_refresh1
+        property alias mute: frame.shortcut_mute
+        property alias mute1: frame.shortcut_mute1
     }
     Settings {
         category: 'Video'
@@ -162,16 +168,40 @@ Window {
         property alias defaultSubtitles: frame.defaultSubtitles
     }
 
+    Shortcut {
+        id: refreshShortcut
+        sequence: frame.shortcut_refresh
+        Component.onCompleted: console.log(sequence)
+        onActivated: {
+            if (connected) {
+                emulateNotification('Internal.RefreshAll')
+            } else {
+                webSocket.reconnect()
+            }
+        }
+    }
+    Shortcut {
+        sequence: shortcut_refresh1
+        Component.onCompleted: console.log(sequence)
+        onActivated: refreshShortcut.onActivated()
+    }
+
     WebSocket {
         id: webSocket
         url: kodiUrl
         active: true
+
+        function reconnect() {
+            webSocket.active = false
+            webSocket.active = true
+        }
 
         onStatusChanged: {
             if (status == WebSocket.Connecting) {
                 log('debug', 'Connecting …')
             } else if (status == WebSocket.Open) {
                 connected = true
+                emulateNotification('Internal.RefreshAll')
             } else if (status == WebSocket.Closing) {
                 log('debug', 'About to close connection')
             } else if (status == WebSocket.Closed) {
@@ -193,16 +223,19 @@ Window {
             if (jsonObj.id == null) {
                 if (jsonObj.error != null) {
                     log('error', 'Error ' + jsonObj.error.code + ': ' +
-                        jsonObj.error.message + ' ' + jsonObj.error.data)
+                        jsonObj.error.message + ' ' + JSON.stringify(jsonObj.error.data))
                 } else if (dictContainsKey(notificationMap, jsonObj.method)) {
                     var functions = notificationMap[jsonObj.method]
                     for (var i=0; i < functions.length; i++) {
                         functions[i](jsonObj.params)
                     }
                 } else {
-                    log('debug', 'Received jsonObj without any id or Error message')
+                    log('debug',
+                        'Received jsonObj without any id or Error message: ' +
+                        jsonObj.method
+                    )
                 }
-            } else if (jsonObj.id <= highestId) {
+            } else if (jsonObj.id <= awaitingResponse.length) {
                 var request = awaitingResponse[jsonObj.id]
                 receiveResponse(request[0], request[1], jsonObj, request[2])
                 awaitingResponse[jsonObj.id] = null
@@ -216,22 +249,65 @@ Window {
 
     Timer {
         id: reconnectTimer
-        interval: 4200
+        interval: 200
         repeat: true
         triggeredOnStart: false
         running: ! connected
+        //Component.onCompleted: {
+            //addNotificationFunction('Internal.RefreshAll', onTriggered)
+        //}
         onTriggered: {
-            console.log("Reconnection attempt")
-            webSocket.active = false
-            webSocket.active = true
+            if (interval < 10000) {
+                interval += 200
+            }
+            log('debug', 'Reconnection attempt, next try in ' + interval + 'ms.')
+            webSocket.reconnect()
+        }
+        onRunningChanged: {
+            if (running) {
+                interval = 200
+            }
+        }
+    }
+
+    Timer {
+        id: timeoutTimer
+        interval: 1000
+        repeat: true
+        triggeredOnStart: false
+        running: true
+        property int timeoutCounter: 0
+        onTriggered: {
+            for (var i=0; i<awaitingResponse.length; i++) {
+                if (awaitingResponse[i] != null) {
+                    awaitingResponse[i][3] -= 1
+                    if (awaitingResponse[i][3] == 0) {
+                        log('notice', 'Request ' + awaitingResponse[i][0] + ' timed out.')
+                        awaitingResponse[i] = null
+                        usableIds.push(i)
+                        timeoutCounter += 1
+                        if (awaitingResponse.length == usableIds.length) {
+                            awaitingResponse = []
+                            usableIds = []
+                        }
+                    }
+                }
+            }
+            if (timeoutCounter >= 5) {
+                log('notice', 'Too many request timeouts, reconnecting…')
+                webSocket.reconnect()
+                timeoutCounter = 0
+            } else if (timeoutCounter > 0) {
+                timeoutCounter -= 1
+            }
         }
     }
 
     function logCurrentRequests() {
-        log('debug', 'Highest request id: ' + highestId)
+        log('debug', 'Highest request id: ' + (awaitingResponse.length - 1))
         log('debug', 'Usable ids: ' + usableIds)
         log('debug', 'Awaiting response:')
-        for (var i=0; i<=highestId; i++) {
+        for (var i=0; i < awaitingResponse.length; i++) {
             log('requested', '\t' + i + ': ' + awaitingResponse[i])
         }
     }
@@ -283,11 +359,10 @@ Window {
         if (usableIds.length > 0) {
             id = usableIds.pop()
         } else {
-            id = highestId
-            highestId += 1
-            log('debug', 'Highest used id: ' + (highestId - 1))
+            id = awaitingResponse.length
+            log('debug', 'Highest used id: ' + (awaitingResponse.length -1))
         }
-        awaitingResponse[id] = [method, params, setterMethod]
+        awaitingResponse[id] = [method, params, setterMethod, 3]
         var text = '{"jsonrpc": "2.0"' + 
             ', "id": ' + id +
             ', "method": ' + method +
@@ -305,8 +380,8 @@ Window {
                     'Error processing request:\n' +
                     '\t' + method + '(' + params + ')\n\t' +
                     jsonObj.error.code + ': ' +
-                    jsonObj.error.message + '(' +
-                    jsonObj.error.data + ')'
+                    jsonObj.error.message + '\n\tData: ' +
+                    JSON.stringify(jsonObj.error.data)
                 )
                 logToBox('error', 'Error sending ' + method)
             }

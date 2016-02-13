@@ -19,6 +19,7 @@ Rectangle {
 
     Component.onCompleted: {
         addNotificationFunction('Player.OnPlay', newPlayerStarted)
+        addNotificationFunction('RefreshAll', optionalTimer)
         newPlayerStarted()
     }
 
@@ -128,7 +129,11 @@ Rectangle {
                 setSubtitleToIndex(newIndex)
                 log('debug', 'Set subtitles to default ' + defaultSubtitles)
                 reset = true
+            } else {
+                log('debug', 'Default subtitles: ' + defaultSubtitles + '  ' + subtitleBox.model)
             }
+        } else {
+            log('debug', 'No default subtitles set.')
         }
         if (reset) {
             seek('0:00:00')
@@ -339,19 +344,6 @@ Rectangle {
             }
             Text { text: '     ' }
             PlayerControlButton {
-                id: nextButton
-                description: 'Next item or chapter'
-                iconName: 'media-skip-forward'
-                shortcut: shortcut_next
-                shortcut1: shortcut_next1
-                onClicked: {
-                    log('debug', 'Next item')
-                    var args = '{"playerid": ' + playerid +
-                               ', "to": "next"}'
-                    sendCommand('"Player.GoTo"', args)
-                }
-            }
-            PlayerControlButton {
                 id: previousButton
                 description: 'Previous item or chapter'
                 iconName: 'media-skip-backward'
@@ -361,6 +353,19 @@ Rectangle {
                     log('debug', 'Previous item')
                     var args = '{"playerid": ' + playerid +
                                ', "to": "previous"}'
+                    sendCommand('"Player.GoTo"', args)
+                }
+            }
+            PlayerControlButton {
+                id: nextButton
+                description: 'Next item or chapter'
+                iconName: 'media-skip-forward'
+                shortcut: shortcut_next
+                shortcut1: shortcut_next1
+                onClicked: {
+                    log('debug', 'Next item')
+                    var args = '{"playerid": ' + playerid +
+                               ', "to": "next"}'
                     sendCommand('"Player.GoTo"', args)
                 }
             }
