@@ -6,32 +6,32 @@ Rewrite much of MainTab/PlayerControls:
  - Make one polling method that is called by all polling requests.
 
 Add a timer for sendUrl: if no player is started 5 seconds later, give a
-warning/ an error.
+warning / an error.
 
-
-Playback speed control
-empty the url-textfield
 Make a Timer for requests: If it isn't received in a set amount of time even
     though it's supposed to be connected, delete the request (or resend it?)
     and log that there's a connection issue. Perhaps even try reconnecting.
     I might also give static ids to all requests (e.g. getvolume always has id=0)
 
-Add dependencies to Readme
-Items grow out of the visible area when the mainTab gets too small
-connectionBox and messageBox overlap with items
-Fix fixed colours (notification background etc)
-ProgressBar: Change colours if disabled
+Update Shortcuts
+Find out which shortcuts have what string (multimedia keys?)
+Volume slider: usable with arrows
+Playback speed control
 Default audio & subtitles: More options
-
 Add MusicTab
 Commandline options?
 
-Find out which shortcuts have what string (multimedia keys?)
 It would be nice to have a "stop library scan" instead of that warning …
 Skip intro: while watching a series, you can say how long the intro is (or
     press "intro started" and "intro stopped" while watching an episode). Then
     you can press a button when the intro starts to jump that far ahead.
 ProgressBar: Make triangle splittable
+
+Visuals:
+    Items grow out of the visible area when the mainTab gets too small
+    connectionBox and messageBox overlap with items
+    Fix fixed colours (notification background etc)
+    ProgressBar: Change colours if disabled
 
 Bugs:
 When I switch off my wifi device, I get a

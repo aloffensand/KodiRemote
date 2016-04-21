@@ -20,6 +20,7 @@ Rectangle {
     Component.onCompleted: {
         addNotificationFunction('Player.OnPlay', newPlayerStarted)
         addNotificationFunction('RefreshAll', optionalTimer)
+        addNotificationFunction('Internal.OnPoll', optionalTimer)
         newPlayerStarted()
     }
 
@@ -105,6 +106,7 @@ Rectangle {
         setSubtitles(jsonObj)
         // Test whether the video has just been started. More or less.
         if (hours != 0 || minutes != 0 || seconds > 5) {
+            log('debug', 'Resuming at ' + hours + ':' + minutes + ':' + seconds)
             return
         }
         // Change to the locally set defaults.
@@ -130,7 +132,7 @@ Rectangle {
                 log('debug', 'Set subtitles to default ' + defaultSubtitles)
                 reset = true
             } else {
-                log('debug', 'Default subtitles: ' + defaultSubtitles + '  ' + subtitleBox.model)
+                log('debug', 'Default subtitles (' + defaultSubtitles + ') not available: ' + subtitleBox.model)
             }
         } else {
             log('debug', 'No default subtitles set.')
@@ -142,7 +144,7 @@ Rectangle {
 
     function setAudioStreams(jsonObj) {
         var newList = []
-        var streams = jsonObj.result.audiostreams
+        var streams = jsonObj.audiostreams
         var equal = (streams.length == audioStreamBox.model.length)
         for (var i = 0; i < streams.length; i++) {
             var streamString = streams[i].index + ': '
@@ -162,7 +164,7 @@ Rectangle {
         if ( ! equal) {
             audioStreamBox.model = newList
         }
-        var index = jsonObj.result.currentaudiostream.index
+        var index = jsonObj.currentaudiostream.index
         audioStreamBox.currentIndex = index
     }
 
@@ -172,7 +174,7 @@ Rectangle {
 
     function setSubtitles(jsonObj) {
         var newList = ['-1: None']
-        var subs = jsonObj.result.subtitles
+        var subs = jsonObj.subtitles
         var equal = (subs.length == (subtitleBox.model.length - 1))
         for (var i=0; i < subs.length; i++) {
             var subStr = subs[i].index + ': '
@@ -191,8 +193,8 @@ Rectangle {
         }
 
         var newIndex = subtitleBox.currentIndex
-        if (jsonObj.result.subtitleenabled) {
-            var newIndex = jsonObj.result.currentsubtitle.index + 1
+        if (jsonObj.subtitleenabled) {
+            var newIndex = jsonObj.currentsubtitle.index + 1
         } else {
             newIndex = 0
         }
@@ -206,18 +208,18 @@ Rectangle {
 
     function setVideoTimes(jsonObj) {
         // Handle length
-        var minutes = fillWithZeroes(jsonObj.result.totaltime.minutes)
-        var seconds = fillWithZeroes(jsonObj.result.totaltime.seconds)
-        var length = jsonObj.result.totaltime.seconds
-        length += jsonObj.result.totaltime.minutes * 60
-        length += jsonObj.result.totaltime.hours * 3600
+        var minutes = fillWithZeroes(jsonObj.totaltime.minutes)
+        var seconds = fillWithZeroes(jsonObj.totaltime.seconds)
+        var length = jsonObj.totaltime.seconds
+        length += jsonObj.totaltime.minutes * 60
+        length += jsonObj.totaltime.hours * 3600
         //progressSlider.videoLength = length
         progressBar.videoLength = length
-        progressText.curLength = jsonObj.result.totaltime.hours
+        progressText.curLength = jsonObj.totaltime.hours
         progressText.curLength += ":" + minutes
         progressText.curLength += ":" + seconds
 
-        progressBar.value = jsonObj.result.percentage
+        progressBar.value = jsonObj.percentage
         if ( ! leftTriangle.editing) {
             leftTriangle.x = ((progressBar.value/100) * progressBar.width) - leftTriangle.width
         }
@@ -225,9 +227,9 @@ Rectangle {
             rightTriangle.x = ((progressBar.value/100) * progressBar.width)
         }
 
-        playerControls.hours = jsonObj.result.time.hours
-        playerControls.minutes = jsonObj.result.time.minutes
-        playerControls.seconds = jsonObj.result.time.seconds
+        playerControls.hours = jsonObj.time.hours
+        playerControls.minutes = jsonObj.time.minutes
+        playerControls.seconds = jsonObj.time.seconds
     }
 
     function updateVideoTimes() {
@@ -237,21 +239,21 @@ Rectangle {
 
     function setNowPlayingText(jsonObj) {
         var newText = ' \n '
-        if (jsonObj.result.item.type == 'episode') {
-            var season = fillWithZeroes(jsonObj.result.item.season)
-            var episode = fillWithZeroes(jsonObj.result.item.episode)
-            newText = jsonObj.result.item.showtitle +
+        if (jsonObj.item.type == 'episode') {
+            var season = fillWithZeroes(jsonObj.item.season)
+            var episode = fillWithZeroes(jsonObj.item.episode)
+            newText = jsonObj.item.showtitle +
                       ' S' + season + 'E' + episode +
-                      '\n' + jsonObj.result.item.title
-        } else if (jsonObj.result.item.type == 'movie') {
-            newText = jsonObj.result.item.title + '\n'
-        } else if (jsonObj.result.item.type == 'song') {
-            newText = jsonObj.result.item.artist + 
-                      ' — ' + jsonObj.result.item.album +
-                      '\n' + jsonObj.result.item.title
+                      '\n' + jsonObj.item.title
+        } else if (jsonObj.item.type == 'movie') {
+            newText = jsonObj.item.title + '\n'
+        } else if (jsonObj.item.type == 'song') {
+            newText = jsonObj.item.artist + 
+                      ' — ' + jsonObj.item.album +
+                      '\n' + jsonObj.item.title
         } else {
-            newText = jsonObj.result.item.title + '\n'
-            log('debug', 'Unhandled item type: ' + jsonObj.result.item.type)
+            newText = jsonObj.item.title + '\n'
+            log('debug', 'Unhandled item type: ' + jsonObj.item.type)
         }
         nowPlayingText.text = newText
     }

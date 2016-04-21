@@ -402,3 +402,21 @@
 	developers, make it a Grid
 
 	* MainTab/PlayerControls.qml (initialSetter): More logs for subtitles
+
+2016-04-21  Aina Lea Offensand
+	* main.qml (onTextMessageReceived, receiveResponse): Relay only the params
+	of JSON objects to the functions instead of the entire object
+
+	* MainTab/ChoosePlayerRow.qml, MainTab/GeneralControls.qml,
+	MainTab/PlayerControls.qml: Receive only params of JSON objects
+
+	* main.qml (removeNotificationFunction): Add function
+
+	* main.qml (pollingTimer): Add timer
+
+	* MainTab/GeneralControls.qml (Component.onCompleted): React to
+	notification "Application.OnVolumeChanged"
+
+	* SettingsTab/SettingsTab.qml (tabSelection): Fix iconSource
+
+	* VideoTab/VideoTab.qml: Works a little more than before.

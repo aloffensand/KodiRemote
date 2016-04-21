@@ -32,7 +32,7 @@ Tab {
                             settingsTabView.getTab(index).iconName
                         }
                     }
-                    iconSource: 'icons/' + iconName + '.png'
+                    iconSource: 'qrc:///icons/' + iconName + '.png'
                     tooltip: text
                     checkable: true
                     states: [

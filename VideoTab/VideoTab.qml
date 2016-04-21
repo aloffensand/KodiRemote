@@ -11,37 +11,40 @@ Tab {
             margins: margins
         }
         color: "transparent"
+        property var allShowsModel: []
+
+        function parse_image_url(raw_url) {
+            console.log(raw_url)
+            var new_url = raw_url.slice(8, raw_url.length-1)
+            new_url = httpUrl + '/image/image://' + encodeURIComponent(new_url)
+            return new_url
+        }
 
         function setSeriesModel(jsonObj) {
             var newModel = []
             jsonObj.result.tvshows.forEach(function(show) {
-                var banner1 = show.art.banner.slice(8, show.art.banner.length-1)
-                var banner = banner1.replace(/%3a/g, ":").replace(/%2f/g, "/")
-                //var thumb1 = show.art.thumb.slice(8, show.art.thumb.length-1)
-                //var thumb = thumb1.replace(/%3a/g, ":").replace(/%2f/g, "/")
-                var poster1 = show.art.poster.slice(8, show.art.poster.length-1)
-                var poster = poster1.replace(/%3a/g, ":").replace(/%2f/g, "/")
-                var fanart1 = show.art.fanart.slice(8, show.art.fanart.length-1)
-                var fanart = fanart1.replace(/%3a/g, ":").replace(/%2f/g, "/")
-                var fanart3 = show.fanart.slice(8, show.fanart.length-1)
-                var fanart2 = fanart3.replace(/%3a/g, ":").replace(/%2f/g, "/")
-                var thumbnail1 = show.thumbnail.slice(8, show.thumbnail.length-1)
-                var thumbnail = thumbnail1.replace(/%3a/g, ":").replace(/%2f/g, "/")
+                var banner = parse_image_url(show.art.banner)
+                //var thumb = parse_image_url(show.art.thumb)
+                var poster = parse_image_url(show.art.poster)
+                var fanart0 = parse_image_url(show.art.fanart)
+                var fanart1 = parse_image_url(show.fanart)
+                var thumbnail = parse_image_url(show.thumbnail)
 
                 newModel.push({title: show.title,
-                               art: banner,
-                               //art2: thumb,
-                               art3: poster,
-                               art4: fanart,
-                               art5: fanart2,
-                               art6: thumbnail
+                               banner: banner,
+                               //thumb: thumb,
+                               poster: poster,
+                               fanart0: fanart0,
+                               fanart1: fanart1,
+                               thumbnail: thumbnail
                 })
             })
             console.log(newModel[0].title)
             console.log(newModel[0].art)
             //seriesTable.otherModel = newModel
             //seriesTable.model = newModel.length
-            seriesTable.model = newModel
+            //seriesTable.model = newModel
+            allShowsModel = newModel
         }
 
         MessageDialog {
@@ -81,41 +84,55 @@ Tab {
             }
         }
 
-        GridView {
-            id: seriesTable
+        StackView {
+            initialItem: allShowsTable
             anchors {
                 top: scanButton.bottom; bottom: parent.bottom
                 left: parent.left; right: parent.right
             }
-            cellHeight: 200
-            cellWidth: 110
-            //model: 0
-            //property var otherModel
-            delegate: Column {
-                //color: "transparent"
-                height: parent.cellHeight
-                width: parent.cellWidth
-                Image {
-                    id: img
-                    //anchors { top: parent.top; left: parent.left }
-                    source: seriesTable.model[index].art3
-                    sourceSize.width: 100
+
+        }
+
+        Component {
+            id: allShowsTable
+            GridView {
+                id: seriesTable
+                //anchors {
+                    //top: scanButton.bottom; bottom: parent.bottom
+                    //left: parent.left; right: parent.right
+                //}
+                cellHeight: 200
+                cellWidth: 110
+                model: allShowsModel
+                //model: 0
+                //property var otherModel
+                delegate: Column {
+                    //color: "transparent"
+                    height: parent.cellHeight
+                    width: parent.cellWidth
+                    Image {
+                        id: img
+                        //anchors { top: parent.top; left: parent.left }
+                        //source: imageUrl + encodeURIComponent(seriesTable.model[index].art3)
+                        source: seriesTable.model[index].poster
+                        sourceSize.width: 100
+                    }
+                    Label {
+                        id: txt
+                        //anchors { top: img.bottom; left: parent.left }
+                        text: seriesTable.model[index].title
+                        width: 100
+                        wrapMode: Text.Wrap
+                    }
                 }
-                Label {
-                    id: txt
-                    //anchors { top: img.bottom; left: parent.left }
-                    text: seriesTable.model[index].title
-                    width: 100
-                    wrapMode: Text.Wrap
-                }
-            }
-            highlight: Rectangle {color: "red"}
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    var xval = parent.contentX + mouse.x
-                    var yval = parent.contentY + mouse.y
-                    seriesTable.currentIndex = seriesTable.indexAt(xval, yval)
+                highlight: Rectangle {color: "red"}
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        var xval = parent.contentX + mouse.x
+                        var yval = parent.contentY + mouse.y
+                        seriesTable.currentIndex = seriesTable.indexAt(xval, yval)
+                    }
                 }
             }
         }

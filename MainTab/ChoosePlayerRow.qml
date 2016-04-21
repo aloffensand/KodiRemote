@@ -12,9 +12,8 @@ Row {
         addNotificationFunction('Internal.RefreshAll', updatePlayeridBox)
     }
 
-    function setActivePlayerList(jsonObj) {
+    function setActivePlayerList(players) {
         var newList = [ '-1: none' ]
-        var players = jsonObj.result
         var equal = (players.length == playeridBox.model.length - 1)
         for (var i = 0; i < players.length; i++) {
             var playerStr = players[i].playerid + ': ' + players[i].type

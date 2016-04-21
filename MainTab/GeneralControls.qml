@@ -10,6 +10,7 @@ Rectangle {
 
     Component.onCompleted: {
         addNotificationFunction('Internal.RefreshAll', updateVolumeControls)
+        addNotificationFunction('Application.OnVolumeChanged', setVolumeControls)
     }
 
     function updateVolumeControls() {
@@ -17,8 +18,8 @@ Rectangle {
         sendRequest('"Application.GetProperties"', args, setVolumeControls)
     }
     function setVolumeControls(jsonObj) {
-        volumeSlider.value = jsonObj.result.volume
-        volumeButton.mute = jsonObj.result.muted
+        volumeSlider.value = jsonObj.volume
+        volumeButton.mute = jsonObj.muted
     }
 
     Shortcut {

@@ -227,7 +227,7 @@ Window {
                 } else if (dictContainsKey(notificationMap, jsonObj.method)) {
                     var functions = notificationMap[jsonObj.method]
                     for (var i=0; i < functions.length; i++) {
-                        functions[i](jsonObj.params)
+                        functions[i](jsonObj.params.data)
                     }
                 } else {
                     log('debug',
@@ -303,6 +303,17 @@ Window {
         }
     }
 
+    Timer {
+        id: pollingTimer
+        interval: 1000
+        repeat: true
+        triggeredOnStart: true
+        running: true
+        onTriggered: {
+            emulateNotification('Internal.OnPoll')
+        }
+    }
+
     function logCurrentRequests() {
         log('debug', 'Highest request id: ' + (awaitingResponse.length - 1))
         log('debug', 'Usable ids: ' + usableIds)
@@ -325,10 +336,28 @@ Window {
         }
     }
 
-    //FIXME: add function.
     // Remove a function from the functions to call when a specific
     // notification is received.
     function removeNotificationFunction(notification, functn) {
+        if ( ! dictContainsKey(notificationMap, notification)) {
+            log('warning', 'Tried to remove function "' + functn + '" from nonexistent notification "' + notification + '"')
+        } else {
+            var functnList = notificationMap[notification]
+            if ( ! functnListcontains(functn)) {
+                log('warning', 'Tried to remove nonexistent function "' + functn + '" from "' + notification + '"')
+            } else {
+                log('debug', 'Removing "' + functn + '" from "' + notification + '"')
+                while (true) {
+                    if (functnList.indexOf(functn) != -1) {
+                        functnList.splice(functnList.indexOf(functn), 1)
+                        log('debug', 'Removed "' + functn + '" from "' + notification + '"')
+                    }
+                    else {
+                        break
+                    }
+                }
+            }
+        }
     }
 
     function emulateNotification(notification) {
@@ -387,7 +416,7 @@ Window {
             }
         // setterMethod is null if no response was expected
         } else if (setterMethod != null) {
-            setterMethod(jsonObj)
+            setterMethod(jsonObj.result)
         }
     }
 
