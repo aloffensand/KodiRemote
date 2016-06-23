@@ -1,3 +1,22 @@
+/*
+ * Copyright © 2015, 2016 Aina Lea Offensand
+ * 
+ * This file is part of KodiRemote.
+ * 
+ * KodiRemote is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * KodiRemote is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with KodiRemote.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import QtQuick 2.5
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
@@ -16,11 +35,12 @@ Rectangle {
 
     // Which methods to call when polling for new information.
     property var updateMethods: []
+    property string pollProperties: []
 
     Component.onCompleted: {
         addNotificationFunction('Player.OnPlay', newPlayerStarted)
-        addNotificationFunction('RefreshAll', optionalTimer)
-        addNotificationFunction('Internal.OnPoll', optionalTimer)
+        addNotificationFunction('RefreshAll', requestAll)
+        addNotificationFunction('Internal.OnPoll', requestAll)
         newPlayerStarted()
     }
 
@@ -28,22 +48,36 @@ Rectangle {
         newPlayerStarted()
     }
 
+    Timer {
+        id: newPlayerTimer
+        interval: 512 // 200 was too short, hope this works (most of the time)
+        repeat: false
+        triggeredOnStart: false
+        running: false
+        onTriggered: initialCheck()
+    }
+
     // This may be called if no player is started, but it is only unpaused.
     // So don't do anything stupid.
     function newPlayerStarted() {
-        if (playertype == 'video') {
-            initialCheck()
-            updateMethods = [
-                updateVideoTimes,
-                updateAudioStreamBox, updateSubtitleBox
-            ]
-        } else if (playertype != 'none') {
-            initialCheck()
-            updateMethods = [
-                updateVideoTimes
-            ]
-        } else {  // if playertype is 'none'
+        if (playertype == 'none') {
             updateMethods = []
+            pollProperties = ''
+        } else {
+            pollProperties = '"totaltime", "percentage", "time"'
+            //updateMethods = [
+                //updateVideoTimes
+            //]
+            if (playertype == 'video') {
+                pollProperties += ', "audiostreams", "currentaudiostream"'
+                pollProperties += ', "subtitles", "currentsubtitle", "subtitleenabled"'
+                //updateMethods = [
+                    //updateVideoTimes,
+                    //updateAudioStreamBox, updateSubtitleBox
+                //]
+            }
+            //initialCheck()
+            newPlayerTimer.start()
         }
     }
 
@@ -51,6 +85,24 @@ Rectangle {
     function optionalTimer() {
         for (var i=0; i<updateMethods.length; i++) {
             updateMethods[i]()
+        }
+    }
+
+    function requestAll(jsonObj) {
+        if (playertype != 'none') {
+            updateVideoTimes
+        }
+        if (pollProperties != '') {
+            requestPlayerProperties(pollProperties, setAll)
+        }
+    }
+
+    function setAll(jsonObj) {
+        setVideoTimes(jsonObj)
+        if (jsonObj.audiostreams != null) {
+            setAudioStreams(jsonObj)
+        } if (jsonObj.subtitles != null) {
+            setSubtitles(jsonObj)
         }
     }
 
@@ -81,34 +133,33 @@ Rectangle {
     // Called whenever a new player is started
     function initialCheck() {
         log('debug', 'New player started (or playback resumed), requesting information…')
-        var properties = '"totaltime", "percentage", "time"'
+        //var properties = '"totaltime", "percentage", "time"'
         //properties += ', "title"'
         //properties += ', "episode", "season", "showtitle", "tvshowid"'
         //properties += ', "album", "artist"'
-        if (playertype == 'video') {
-            properties += ', "audiostreams", "currentaudiostream"'
-            properties += ', "subtitles", "currentsubtitle", "subtitleenabled"'
-        }
-        requestPlayerProperties(properties, initialSetter)
+        //if (playertype == 'video') {
+            //properties += ', "audiostreams", "currentaudiostream"'
+            //properties += ', "subtitles", "currentsubtitle", "subtitleenabled"'
+        //}
+        requestPlayerProperties(pollProperties, initialSetter)
         updateNowPlayingText()
     }
 
     // Called whenever information about a new player is received
     function initialSetter(jsonObj) {
         log('debug', 'Received information about new player.')
-        //setNowPlayingText(jsonObj)
-        setVideoTimes(jsonObj)
-        // Everything that follows is about audioStreams and subtitles.
-        if (playertype != 'video') {
-            return
+        setAll(jsonObj)
+        if (playertype == 'video') {
+            // Test whether the video has just been started. More or less.
+            if (hours != 0 || minutes != 0 || seconds > 5) {
+                log('debug', 'Resuming at ' + hours + ':' + minutes + ':' + seconds)
+            } else {
+                changeToDefaults()
+            }
         }
-        setAudioStreams(jsonObj)
-        setSubtitles(jsonObj)
-        // Test whether the video has just been started. More or less.
-        if (hours != 0 || minutes != 0 || seconds > 5) {
-            log('debug', 'Resuming at ' + hours + ':' + minutes + ':' + seconds)
-            return
-        }
+    }
+
+    function changeToDefaults() {
         // Change to the locally set defaults.
         // reset: Should we seek back to 0:00:00?
         var reset = false
@@ -126,13 +177,15 @@ Rectangle {
         }
         if (defaultSubtitles != '') {
             var currentSubs = subtitleBox.getCurrentLanguage()
-            if (currentSubs != defaultSubtitles && subtitleBox.indexOfLanguage(defaultSubtitles) != -2) {
+            if (currentSubs == defaultSubtitles) {
+                log('debug', 'Default subtitles already set.')
+            } else if (subtitleBox.indexOfLanguage(defaultSubtitles) == -2) {
+                log('debug', 'Default subtitles (' + defaultSubtitles + ') not available: ' + subtitleBox.model)
+            } else {
                 var newIndex = subtitleBox.indexOfLanguage(defaultSubtitles)
                 setSubtitleToIndex(newIndex)
                 log('debug', 'Set subtitles to default ' + defaultSubtitles)
                 reset = true
-            } else {
-                log('debug', 'Default subtitles (' + defaultSubtitles + ') not available: ' + subtitleBox.model)
             }
         } else {
             log('debug', 'No default subtitles set.')

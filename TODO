@@ -1,9 +1,30 @@
+Known bugs:
+    Audio changes tune when you jump (probably Kodi bug)
+    Many keys don't work for shortcuts, like the keypad arrows and multimedia keys
+    Audio and Subtitles don't always change to the defaults (possibly fixed)
 
+    Network:
+    When I switch off my wifi device, I get a
+        "Method "GetAll" with signature "s" on interface
+        "org.freedesktop.DBus.Properties" doesn't exist".
+        I don't want any feedback besides "connection lost"…
+        The error seems to show up AFTER curl.send(data);
+        curl.onreadystatechange doesn't seem to get called anymore.
+        Strangely, building a try-catch around curl.onreadystatechange or curl.send
+        doesn't solve the problem though. Several other try-catches do nothing,
+    too…
+    When the connection is capped via kNetworkManager's Disable Wireless, it doesn't
+        show "connection lost". If I open the remote AFTER disabling wireless, it
+        works as expected. 
+        Update: Fixed?
+
+
+Add functionality to VideoTab?
+Add MusicTab
 
 Rewrite much of MainTab/PlayerControls:
- - Add static ids for polling requests like player properties, other "requests"
-   get an id of [index] + 30 or something like that.
- - Make one polling method that is called by all polling requests.
+ - Maybe add static ids for polling requests like player properties,
+   other "requests" get an id of [index] + 30 or something like that.
 
 Add a timer for sendUrl: if no player is started 5 seconds later, give a
 warning / an error.
@@ -18,7 +39,6 @@ Find out which shortcuts have what string (multimedia keys?)
 Volume slider: usable with arrows
 Playback speed control
 Default audio & subtitles: More options
-Add MusicTab
 Commandline options?
 
 It would be nice to have a "stop library scan" instead of that warning …
@@ -32,18 +52,3 @@ Visuals:
     connectionBox and messageBox overlap with items
     Fix fixed colours (notification background etc)
     ProgressBar: Change colours if disabled
-
-Bugs:
-When I switch off my wifi device, I get a
-    "Method "GetAll" with signature "s" on interface
-    "org.freedesktop.DBus.Properties" doesn't exist".
-    I don't want any feedback besides "connection lost"…
-    The error seems to show up AFTER curl.send(data);
-    curl.onreadystatechange doesn't seem to get called anymore.
-    Strangely, building a try-catch around curl.onreadystatechange or curl.send
-    doesn't solve the problem though. Several other try-catches do nothing,
-too…
-When I cap the connection via kNetworkManager's Disable Wireless, it doesn't
-    show "connection lost". If I open the remote AFTER disabling wireless, it
-    works as expected. 
-    Update: Fixed?

@@ -420,3 +420,19 @@
 	* SettingsTab/SettingsTab.qml (tabSelection): Fix iconSource
 
 	* VideoTab/VideoTab.qml: Works a little more than before.
+
+2016-06-23  Aina Lea Offensand
+	* Add GPL license
+
+    * main.qml (websocket): Log all notifications completely
+
+	* MainTab/PlayerControls.qml (newPlayerStarted, initialRequest, requestAll,
+	initialSetter, setAll): Poll all information in one method and request
+
+	* MainTab/PlayerControls.qml (newPlayerTimer, newPlayerStarted): Wait a
+	short time before making the first request to get the correct time
+
+	* MainTab/PlayerControls.qml (initialSetter, changeToDefaults): Split
+	method into two to make it more readable
+
+	* TODO: Add Known Bugs section
