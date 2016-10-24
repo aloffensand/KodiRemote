@@ -17,7 +17,7 @@
     <file>MainTab/ChoosePlayerRow.qml</file>
     <file>MainTab/PlayerControls.qml</file>
 
-    <file>DetailTab/DetailTab.qml</file>
+    <!--<file>DetailTab/DetailTab.qml</file>-->
 
     <file>VideoTab/VideoTab.qml</file>
 

@@ -464,3 +464,6 @@
 	* main.qml (messsageBox, logToBox): New function showMessage
 
 	* DebugTab/DebugTab.qml: Introspect is easily changeable
+
+2016-11-24  Aina Lea Offensand
+	* resources.qrc: comment out DetailTab so that it compiles again
