@@ -296,7 +296,10 @@ Rectangle {
             shortcut1: shortcut_enterText1
             onAccepted: sendTextAction.onTriggered()
         }
-        Button { action: sendTextAction }
+        Button {
+            action: sendTextAction
+            iconSource: 'qrc:///icons/' + iconName + '.png'
+        }
 
         ControlTextField {
             Layout.row: 3; Layout.column: 9

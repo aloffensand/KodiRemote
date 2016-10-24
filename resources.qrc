@@ -33,6 +33,7 @@
     <file>DebugTab/DebugTab.qml</file>
 
 
+    <file>icons/arrow-right.png</file>
     <file>icons/audio-volume-high.png</file>
     <file>icons/audio-volume-low.png</file>
     <file>icons/audio-volume-muted.png</file>

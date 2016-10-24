@@ -467,3 +467,10 @@
 
 2016-11-24  Aina Lea Offensand
 	* resources.qrc: comment out DetailTab so that it compiles again
+
+2016-11-24  Aina Lea Offensand
+    * icons/arrow-right.png: New file
+	
+	* resources.qrc: Add file arrow-right
+
+	* MainTab/GeneralControls.qml: sendText button gets the right iconSource
