@@ -25,7 +25,7 @@ Tab {
     id: mainTab
     title: 'Main Controls'
 
-    // Just a container for it's elements
+    // Just a container for its elements
     // GeneralControls, ChoosePlayerRow and PlayerControls.
     // Ensures they can exchange the necessary information
     // (mainly playerid and playertype)
@@ -40,15 +40,16 @@ Tab {
         property int rowHeight: 20
         property int playerid: -1
         property string playertype: 'none'
+        property int playlistid: -1
 
         Item {
             id: focusCatcher
-            focus: false
-            Component.onCompleted: focus = true
+            focus: mainTab.focus
         }
 
         function returnFocus() {
-            focusCatcher.focus = true
+            mainTab.focus = false
+            mainTab.focus = true
         }
 
         // Poll for information every <interval> milliseconds
@@ -66,7 +67,7 @@ Tab {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: focusCatcher.focus = true
+            onClicked: returnFocus()
         }
 
         GeneralControls {

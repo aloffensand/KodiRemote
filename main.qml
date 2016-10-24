@@ -26,6 +26,7 @@ import "MainTab"
 import "VideoTab"
 import "SettingsTab"
 import "DebugTab"
+//import "DetailTab"
 
 Window {
     id: frame
@@ -278,7 +279,7 @@ Window {
         //}
         onTriggered: {
             if (interval < 10000) {
-                interval += 200
+                interval *= 2
             }
             log('debug', 'Reconnection attempt, next try in ' + interval + 'ms.')
             webSocket.reconnect()
@@ -478,7 +479,6 @@ Window {
                 var messageColor = 'blue'
             }
             messageBox.showMessage(messageText, messageColor)
-            messageTimer.restart()
         }
     }
 
@@ -507,165 +507,27 @@ Window {
         anchors.fill: parent
         style: MyTabViewStyle {}
 
-        onCurrentIndexChanged: {
-            getTab(currentIndex).focus = true
-        }
-
-        Rectangle {
+        ConnectionBox {
             z: 1
             id: connectionBox
             anchors.top: parent.top
             anchors.right: parent.right
-            width: 0
-            height: 0
-            border.width: 1
-            border.color: 'black'
-            radius: 2
-            color: 'red'
-            property string text: 'No connection found'
-            states: State {
-                name: "visible"; when: connectionBox.text != ''
-                PropertyChanges {
-                    target: connectionText
-                    text: connectionBox.text
-                }
-                PropertyChanges {
-                    target: connectionBox
-                    width: connectionText.width + 4
-                    height: connectionText.height + 4
-                }
-            }
-            transitions: Transition {
-                to: "visible"
-                reversible: true
-                SequentialAnimation {
-                    PropertyAnimation {
-                        target: connectionBox
-                        properties: "width,x,y"
-                        duration: 0
-                    }
-                    PropertyAnimation {
-                        target: connectionBox
-                        property: "height"
-                        duration: 250
-                    }
-                }
-            }
-
-            Label {
-                z: 1
-                id: connectionText
-                anchors.centerIn: parent
-                text: ''
-            }
         }
 
-        Rectangle {
+        MessageBox {
             z: 1
             id: messageBox
             anchors.top: connectionBox.bottom
             anchors.right: parent.right
-            width: 0
-            height: 0
-            border.width: 1
-            border.color: 'black'
-            color: 'blue'
-            property string text: ''
-            property string lastText: ''
-            property color lastColor: 'transparent'
-            state: "hidden"
-
-            function showMessage(text, col) {
-                if (text == '') {
-                    messageBox.state = "hidden"
-                    messageBox.text = ''
-                } else if (messageBox.state == "hidden") {
-                    messageBox.text = text
-                    messageBox.color = col
-                    messageBox.state = "visible"
-                } else {
-                    messageBox.lastText = messageBox.text
-                    messageBox.lastColor = messageBox.color
-                    messageBox.state = "textChanged"
-                    messageBox.text = text
-                    messageBox.color = col
-                    messageBox.state = "visible"
-                }
-            }
-
-            states: [
-                State {
-                    name: "visible"
-                    PropertyChanges {
-                        target: messageBox
-                        width: messageText.width + 4
-                        height: messageText.height + 4
-                        color: messageBox.color
-                    }
-                    PropertyChanges {
-                        target: messageText
-                        text: messageBox.text
-                    }
-                }, State {
-                    name: "textChanged"
-                    PropertyChanges {
-                        target: messageBox
-                        width: messageText.width + 4
-                        height: messageText.height + 4
-                        color: messageBox.lastColor
-                    }
-                    PropertyChanges {
-                        target: messageText
-                        text: messageBox.lastText
-                    }
-                }, State { name: "hidden" }
-            ]
-            transitions: [
-                Transition {
-                    from: "hidden"
-                    reversible: true
-                    SequentialAnimation {
-                        PropertyAnimation {
-                            target: messageBox
-                            properties: "width,x,y"
-                            duration: 0
-                        }
-                        PropertyAnimation {
-                            target: messageBox
-                            properties: "height"
-                            duration: 150
-                        }
-                    }
-                }, Transition {
-                    from: "textChanged"
-                    PropertyAnimation {
-                        target: messageBox
-                        properties: "width,color"
-                        duration: 100
-                    }
-                }
-            ]
-            Label {
-                id: messageText
-                anchors.centerIn: parent
-                text: ''
-            }
         }
-
-        // Hide the messageBox after <interval> milliseconds.
-        Timer {
-            id: messageTimer
-            interval: 2500
-            onTriggered: {
-                messageBox.showMessage('', 'blue')
-            }
-        }
-
 
         MainTab {
             id: mainTab
             Component.onCompleted: forceActiveFocus()
         }
+        //DetailTab {
+            //id: detailTab
+        //}
         VideoTab {
             id: videoTab
         }

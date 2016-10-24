@@ -64,7 +64,7 @@ Rectangle {
             updateMethods = []
             pollProperties = ''
         } else {
-            pollProperties = '"totaltime", "percentage", "time"'
+            pollProperties = '"playlistid", "totaltime", "percentage", "time"'
             //updateMethods = [
                 //updateVideoTimes
             //]
@@ -98,6 +98,7 @@ Rectangle {
     }
 
     function setAll(jsonObj) {
+        playlistid = jsonObj.playlistid
         setVideoTimes(jsonObj)
         if (jsonObj.audiostreams != null) {
             setAudioStreams(jsonObj)

@@ -2,6 +2,8 @@
 <qresource>
     <file>main.qml</file>
     <file>Icon.qml</file>
+    <file>ConnectionBox.qml</file>
+    <file>MessageBox.qml</file>
     <file>MyTabViewStyle.qml</file>
 
     <!-- Main Controls Tab -->
@@ -14,6 +16,8 @@
     <file>MainTab/GeneralControls.qml</file>
     <file>MainTab/ChoosePlayerRow.qml</file>
     <file>MainTab/PlayerControls.qml</file>
+
+    <file>DetailTab/DetailTab.qml</file>
 
     <file>VideoTab/VideoTab.qml</file>
 

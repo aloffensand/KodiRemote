@@ -21,6 +21,8 @@ Known bugs:
 
 Add functionality to VideoTab?
 Add MusicTab
+Test if a Video player can "play" images or music.
+  If not, change the "Add url to playlist" functionality
 
 Rewrite much of MainTab/PlayerControls:
  - Maybe add static ids for polling requests like player properties,

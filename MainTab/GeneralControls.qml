@@ -41,6 +41,26 @@ Rectangle {
         volumeButton.mute = jsonObj.muted
     }
 
+    function parseUrl(raw_url) {
+        log('debug', 'Parsing Url ' + raw_url)
+        var youtube_prefix = 'plugin://plugin.video.youtube/?action=play_video&videoid='
+        var regExp0 = /^.*(youtu.be\/|v\/|u\/w\/|embed\/|watch\?v=)([^#\&\?]*).*/
+        var regExp1 = /^.*(youtube.com\/watch.*[\?\&]v=)([^#\&\?]*).*/
+        var regExp2 = /^(mp4|mkv|mov|mp3|avi|flv|wmv|asf|flac|mka|m4a|aac|ogg|pls|jpg|jpeg|png|gif|tiff)$/
+        var match0 = raw_url.match(regExp0)
+        var match1 = raw_url.match(regExp1)
+        var extension = raw_url.split('.').pop()
+        var parsed_url = raw_url
+        if (match0 && match0[2].length == 11) {
+            parsed_url = youtube_prefix + match0[2]
+        } else if (match1 && match1[2].length == 11) {
+            parsed_url = youtube_prefix + match1[2]
+        } else if ( ! regExp2.test(extension)) {
+            log('notice', 'The requested url may not be supported:' + raw_url)
+        }
+        return parsed_url
+    }
+
     Shortcut {
         id: settingsShortcut
         sequence: shortcut_settings
@@ -54,28 +74,10 @@ Rectangle {
 
     Action {
         id: sendUrlAction
-        text: 'Send'
-        tooltip: 'Send Video/Audio/Image Url (Enter while in input field)'
+        iconName: 'arrow-right'
+        tooltip: 'Send Video, Audio or Image Url (Enter while in input field)'
         onTriggered: {
-            var raw_url = sendUrlTextBox.text
-            log('debug', 'Parsing Url ' + raw_url)
-            var youtube_prefix = 'plugin://plugin.video.youtube/?action=play_video&videoid='
-            var regExp0 = /^.*(youtu.be\/|v\/|u\/w\/|embed\/|watch\?v=)([^#\&\?]*).*/
-            var regExp1 = /^.*(youtube.com\/watch.*[\?\&]v=)([^#\&\?]*).*/
-            var regExp2 = /^(mp4|mkv|mov|mp3|avi|flv|wmv|asf|flac|mka|m4a|aac|ogg|pls|jpg|jpeg|png|gif|tiff)$/
-            var match0 = raw_url.match(regExp0)
-            var match1 = raw_url.match(regExp1)
-            var extension = raw_url.split('.').pop()
-            if (match0 && match0[2].length == 11) {
-                var send_url = youtube_prefix + match0[2]
-            } else if (match1 && match1[2].length == 11) {
-                var send_url = youtube_prefix + match1[2]
-            } else if (regExp2.test(extension)) {
-                var send_url = raw_url
-            } else {
-                log('notice', 'The requested url may not be supported:' + raw_url)
-                var send_url = raw_url
-            }
+            var send_url = parseUrl(sendUrlTextBox.text)
             log('debug', 'Sending Url ' + send_url)
             sendCommand('"Player.Open"', '{"item": {"file": "' + send_url + '"}}')
             sendUrlTextBox.text = ''
@@ -84,8 +86,28 @@ Rectangle {
     }
 
     Action {
+        id: addToPlaylistAction
+        iconName: 'list-add'
+        tooltip: 'Add the Video/Audio/Image to the playlist of the player chosen below'
+        onTriggered: {
+            var send_url = parseUrl(sendUrlTextBox.text)
+            if (playlistid == -1) {
+                log('debug', 'Sending Url ' + send_url)
+                sendCommand('"Player.Open"', '{"item": {"file": "' + send_url + '"}}')
+            } else {
+                log('debug', 'Adding Url ' + send_url + ' to playlist ' + playlistid)
+                var args = '{"playlistid": ' + playlistid
+                args += ', "item": {"file": "' + send_url + '"}}'
+                sendCommand('"Playlist.Add"', args)
+            }
+            sendUrlTextBox.text = ''
+            mainRec.returnFocus()
+        }
+    }
+
+    Action {
         id: sendTextAction
-        text: 'Send'
+        iconName: 'dialog-ok-apply'
         tooltip: 'Send text to the onscreen keyboard (Enter while in input field)'
         onTriggered: {
             log('debug', 'Sending text ' + sendTextTextBox.text)
@@ -238,7 +260,7 @@ Rectangle {
                     }
                 }
                 function setMute(jsonObj) {
-                    mute = jsonObj.result
+                    mute = jsonObj
                 }
             }
 
@@ -286,6 +308,7 @@ Rectangle {
             shortcut1: shortcut_enterUrl1
             onAccepted: sendUrlAction.onTriggered()
         }
-        Button { action: sendUrlAction }
+        ControlButton { action: sendUrlAction }
+        ControlButton { action: addToPlaylistAction }
     }
 }

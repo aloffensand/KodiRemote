@@ -46,11 +46,15 @@ Tab {
         Button {
             text: 'Introspect'
             onClicked: {
-                var args = '{"filter": {"id": "Application.SetMute", "type": "method"}}'
+                //var args = '{"filter": {"id": "Application.SetMute", "type": "method"}}'
+                var requestid = "Player.Open"
+                var type = "method"
+                var args = '{"filter": {"id": "' + requestid
+                args += '", "type": "' + type + '"}}'
                 sendRequest('"JSONRPC.Introspect"', args, receiveIntrospect)
             }
             function receiveIntrospect(jsonObj) {
-                log('debug', JSON.stringify(jsonObj.result))
+                log('debug', JSON.stringify(jsonObj))
             }
         }
     }

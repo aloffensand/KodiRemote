@@ -436,3 +436,31 @@
 	method into two to make it more readable
 
 	* TODO: Add Known Bugs section
+
+2016-11-24  Aina Lea Offensand
+    * main.qml, ConnectionBox.qml, MessageBox.qml: Moved connectionBox and
+	messageBox into their own files
+
+	* MainTab/MainTab.qml, MainTab/GeneralControls.qml,
+	MainTab/PlayerControls.qml: Add playerid property and functionality
+
+	* MainTab/GeneralControls.qml: Add 'Add to Playlist' function for URLs
+
+	* MainTab/GeneralControls.qml: Use icons instead of text for SendUrl and
+	SendText buttons
+
+	* MainTab/GeneralControls.qml (sendUrlAction, parseUrl): parseUrl gets its
+	own function
+
+	* MainTab/GeneralControls.qml (volumeButton): Fix setMute
+
+	* MainTab/MainTab.qml, main.qml: Fix focus problem that under some
+	circumstances, the Up Arrow button would get focus instead of the
+	focusCatcher
+
+	* main.qml (reconnectTimer.onTriggered): Double the interval instead of
+	multiplying with 10
+
+	* main.qml (messsageBox, logToBox): New function showMessage
+
+	* DebugTab/DebugTab.qml: Introspect is easily changeable
